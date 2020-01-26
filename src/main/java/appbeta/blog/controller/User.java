@@ -9,4 +9,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 @RequestMapping("/user")
 public class User {
 
+	// TODO
+//	public String add() {}
+	
+	// TODO
+//	public String edit() {}
+	
+	// TODO
+//	public String delete() {}
+	
+	// TODO
+//	public String get() {}
+	
+	// TODO Autoryzacja użytkownika OAuth
 }

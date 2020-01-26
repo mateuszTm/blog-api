@@ -9,4 +9,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 @RequestMapping("/post")
 public class Post {
 
+	// TODO
+//	public String add() {}
+	
+	// TODO
+//	public String edit() {}
+	
+	// TODO
+//	public String delete() {}
+	
+	// TODO
+//	public String get() {}
+	// metoda może zwracać jeden lub pewną liczbę ostatnich postów
 }
