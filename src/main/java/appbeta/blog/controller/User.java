@@ -10,16 +10,26 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class User {
 
 	// TODO
-//	public String add() {}
+	@GetMapping("/add")
+	public String add() {
+		return "todo user.add";
+	}
 	
 	// TODO
-//	public String edit() {}
+	public String edit() {
+		return "todo user.edit";
+	}
 	
 	// TODO
-//	public String delete() {}
+	public String delete() {
+		return "todo user.delete";
+	}
 	
 	// TODO
-//	public String get() {}
+	@GetMapping("/info")
+	public String getInfo() {
+		return "todo user.getInfo";
+	}
 	
 	// TODO Autoryzacja użytkownika OAuth
 }
