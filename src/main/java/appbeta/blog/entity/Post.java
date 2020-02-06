@@ -7,6 +7,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import java.time.LocalDateTime;
 import javax.persistence.Lob;
+import java.util.List;
+import javax.persistence.ManyToOne;
+import javax.persistence.JoinColumn;
+import javax.persistence.CascadeType;
 
 @Entity
 @Table(name="post")
@@ -25,6 +29,10 @@ public class Post {
 	@Lob
 	private String content;
 	
+	@ManyToOne(cascade=CascadeType.ALL)
+	@JoinColumn(name="user_id")
+	private User user;
+
 	public Post() {}
 
 	public Post(LocalDateTime date, String title, String content) {
@@ -63,5 +71,13 @@ public class Post {
 
 	public void setContent(String content) {
 		this.content = content;
+	}
+	
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
 	}
 }

@@ -6,6 +6,8 @@ import javax.persistence.Id;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Column;
+import java.util.List;
+import javax.persistence.OneToMany;
 
 @Entity
 @Table(name="user")
@@ -20,6 +22,15 @@ public class User {
 	private String password;
 	
 	private boolean locked;
+	
+	@OneToMany(mappedBy="userId")
+	private List<Post> posts;
+	
+	public User addPost(Post post) {
+		this.posts.add(post);
+		post.setUser(this);
+		return this;
+	}
 
 	public User() {}
 	
