@@ -8,6 +8,11 @@ import javax.persistence.GenerationType;
 import javax.persistence.Column;
 import java.util.List;
 import javax.persistence.OneToMany;
+import javax.persistence.ManyToMany;
+import javax.persistence.CascadeType;
+import javax.persistence.JoinTable;
+import javax.persistence.JoinColumn;
+import java.util.Set;
 
 @Entity
 @Table(name="user")
@@ -26,11 +31,13 @@ public class User {
 	@OneToMany(mappedBy="userId")
 	private List<Post> posts;
 	
-	public User addPost(Post post) {
-		this.posts.add(post);
-		post.setUser(this);
-		return this;
-	}
+	@ManyToMany(cascade=CascadeType.ALL)
+	@JoinTable(
+			name="user_role",
+			joinColumns=@JoinColumn(name="user_id"),
+			inverseJoinColumns=@JoinColumn(name="role_id")
+			)
+	private Set<Role> roles;
 
 	public User() {}
 	
@@ -71,4 +78,37 @@ public class User {
 	public void setLocked(boolean locked) {
 		this.locked = locked;
 	}
+	
+	public Set<Role> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(Set<Role> roles) {
+		this.roles = roles;
+	}
+	
+	public User addRole(Role role) {
+		this.roles.add(role);
+		role.getUsers().add(this);
+		return this;
+	}
+	
+	public void removeRole(Role role) {
+		this.roles.remove(role);
+		role.getUsers().remove(this);
+	}
+
+	public List<Post> getPosts() {
+		return posts;
+	}
+
+	public void setPosts(List<Post> posts) {
+		this.posts = posts;
+	}
+	
+	public User addPost(Post post) {
+		this.posts.add(post);
+		post.setUser(this);
+		return this;
+	}	
 }
