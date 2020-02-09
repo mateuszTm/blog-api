@@ -13,6 +13,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.JoinTable;
 import javax.persistence.JoinColumn;
 import java.util.Set;
+import javax.persistence.FetchType;
 
 @Entity
 @Table(name="user")
@@ -28,7 +29,7 @@ public class User {
 	
 	private boolean locked;
 	
-	@OneToMany(mappedBy="userId")
+	@OneToMany(mappedBy="userId", fetch=FetchType.LAZY)
 	private List<Post> posts;
 	
 	@ManyToMany(cascade=CascadeType.ALL)
