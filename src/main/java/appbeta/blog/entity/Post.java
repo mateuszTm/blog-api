@@ -11,9 +11,11 @@ import java.util.List;
 import javax.persistence.ManyToOne;
 import javax.persistence.JoinColumn;
 import javax.persistence.CascadeType;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name="post")
+@JsonIgnoreProperties(value= {"date"}, allowGetters = true)
 public class Post {
 	
 	@Id
