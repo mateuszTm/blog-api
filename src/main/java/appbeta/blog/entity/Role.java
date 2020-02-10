@@ -62,4 +62,11 @@ public class Role {
 		this.users.remove(user);
 		user.getRoles().remove(this);
 	}
+
+	@Override
+	public String toString() {
+		return "Role [id=" + id + ", name=" + name + "]";
+	}
+	
+	
 }

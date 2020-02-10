@@ -29,7 +29,7 @@ public class User {
 	
 	private boolean locked;
 	
-	@OneToMany(mappedBy="userId", fetch=FetchType.LAZY)
+	@OneToMany(mappedBy="user", fetch=FetchType.LAZY)
 	private List<Post> posts;
 	
 	@ManyToMany(cascade=CascadeType.ALL)
