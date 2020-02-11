@@ -32,6 +32,7 @@ public class User {
 	@OneToMany(mappedBy="user", fetch=FetchType.LAZY)
 	private List<Post> posts;
 	
+	// TODO przemyśleć czy powinno być fetchType.EAGER?
 	@ManyToMany(cascade=CascadeType.ALL)
 	@JoinTable(
 			name="user_role",
