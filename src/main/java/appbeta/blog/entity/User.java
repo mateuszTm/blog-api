@@ -2,6 +2,8 @@ package appbeta.blog.entity;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import javax.persistence.Id;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -17,6 +19,7 @@ import javax.persistence.FetchType;
 
 @Entity
 @Table(name="user")
+@JsonIgnoreProperties(value= {"locked"})
 public class User {
 
 	@Id
@@ -33,7 +36,7 @@ public class User {
 	private List<Post> posts;
 	
 	// TODO przemyśleć czy powinno być fetchType.EAGER?
-	@ManyToMany(cascade=CascadeType.ALL)
+	@ManyToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
 	@JoinTable(
 			name="user_role",
 			joinColumns=@JoinColumn(name="user_id"),
@@ -87,17 +90,6 @@ public class User {
 
 	public void setRoles(Set<Role> roles) {
 		this.roles = roles;
-	}
-	
-	public User addRole(Role role) {
-		this.roles.add(role);
-		role.getUsers().add(this);
-		return this;
-	}
-	
-	public void removeRole(Role role) {
-		this.roles.remove(role);
-		role.getUsers().remove(this);
 	}
 
 	public List<Post> getPosts() {
