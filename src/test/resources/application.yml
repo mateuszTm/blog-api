@@ -1,0 +1,7 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/blog_test?useSSL=false&serverTimezone=UTC
+    username: blogtester
+    password: blogtester
+  jpa:
+    show-sql: true
