@@ -8,3 +8,10 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL5Dialect
+#logging:
+#  file: error.log
+#  level:
+#    appbeta:
+#      blog:
+#        error:
+#          ApiExceptionHandler: INFO

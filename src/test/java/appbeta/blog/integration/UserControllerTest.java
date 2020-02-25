@@ -3,6 +3,7 @@ package appbeta.blog.integration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 
+//import static org.junit.Assert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
@@ -12,6 +13,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import javax.persistence.EntityNotFoundException;
 
 import org.json.JSONException;
 import org.junit.jupiter.api.Test;
@@ -31,10 +34,16 @@ import org.skyscreamer.jsonassert.JSONCompareMode;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import appbeta.blog.entity.Post;
 import appbeta.blog.entity.Role;
 import appbeta.blog.entity.User;
+import appbeta.blog.error.ErrorResponse;
+
+import com.jayway.jsonpath.JsonPath;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -87,6 +96,26 @@ public class UserControllerTest {
 	}
 	
 	@Test
+	public void FailToGetUnexistingUser() throws JSONException, JsonProcessingException {
+		//given
+		Long userId = 99999999L;
+		ObjectNode expectedJson = objectMapper.createObjectNode();
+		expectedJson.put("status", "NOT_FOUND");
+		expectedJson.put("message", "User id " + userId + " has not been found");
+		String expected = objectMapper.writeValueAsString(expectedJson);
+		// when
+		ResponseEntity response = restTemplate.getForEntity("/user/" + userId, String.class);
+		
+		// then
+		assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+		assertEquals(MediaType.APPLICATION_JSON, response.getHeaders().getContentType());
+		String actual = response.getBody().toString();
+		JSONAssert.assertEquals(expected, actual, false);
+		
+		assertThat(actual).contains("\"timestamp\":");
+	}
+	
+	@Test
 	@Sql(scripts="/sql/test_db_schema.sql")
 	public void PostNewUser() throws JsonMappingException, JsonProcessingException {
 		User u = new User();
@@ -104,6 +133,7 @@ public class UserControllerTest {
 //		System.out.println(objectMapper.writeValueAsString(u));
 		
 		ResponseEntity response = restTemplate.postForEntity("/user", u, String.class);
+		
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 		User newUser = objectMapper.readValue(response.getBody().toString(), User.class); 
 		assertNotEquals(0, newUser.getId());

@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PathVariable;
 import java.util.List;
+
+import javax.persistence.EntityNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 @RestController
@@ -27,7 +30,7 @@ public class UserController {
 	
 	@GetMapping("/{id}")
 	public User getUser(@PathVariable Long id) {
-		return userService.findUserById(id).orElseThrow(() -> new RuntimeException("User id " + id + " has not been found"));
+		return userService.findUserById(id);
 	}
 
 	@PostMapping()
@@ -40,12 +43,7 @@ public class UserController {
 	
 	@PutMapping()
 	public User edit(@RequestBody User user) {
-		if (userService.findUserById(user.getId()).isPresent()) {
-			userService.save(user);
-		} else {
-			throw new RuntimeException("User id " + user.getId() + " does not exist");
-		}
-		return user;
+		return userService.updateUser(user);
 	}
 	
 	@DeleteMapping("/{id}")

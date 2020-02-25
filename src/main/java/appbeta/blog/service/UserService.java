@@ -9,6 +9,8 @@ public interface UserService {
 
 	public void save(User user);
 	
+	public User updateUser(User user);
+	
 	public void remove (User user);
 	
 	public void removeById(Long id);
@@ -17,5 +19,5 @@ public interface UserService {
 	
 	public User findUserByLogin(String  login);
 	
-	public Optional <User> findUserById(Long id);
+	public User findUserById(Long id);
 }
