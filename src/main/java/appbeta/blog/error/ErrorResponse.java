@@ -1,12 +1,14 @@
 package appbeta.blog.error;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.context.annotation.Profile;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 import java.time.LocalDateTime;
+import java.util.List;
+
 
 public class ErrorResponse {
 	
@@ -16,6 +18,9 @@ public class ErrorResponse {
 	private LocalDateTime timestamp;
 	
 	private String message;
+
+	@JsonInclude(Include.NON_NULL)
+	private List<AbstractErrorResponse> errors;
 	
 	public ErrorResponse () {
 		timestamp = LocalDateTime.now();
@@ -37,6 +42,14 @@ public class ErrorResponse {
 		this();
 		this.status = status;
 		this.message = message;
+	}
+	
+	public List<AbstractErrorResponse> getErrors() {
+		return errors;
+	}
+
+	public void setErrors(List<AbstractErrorResponse> errors) {
+		this.errors = errors;
 	}
 
 	public HttpStatus getStatus() {

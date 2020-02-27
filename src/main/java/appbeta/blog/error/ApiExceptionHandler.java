@@ -1,33 +1,45 @@
 package appbeta.blog.error;
 
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.WebRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.io.IOException;
-import java.time.LocalDateTime;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityNotFoundException;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
 
 @ControllerAdvice
-public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
+public class ApiExceptionHandler {
 	
 	protected final Logger log = LoggerFactory.getLogger(getClass());
+	
+	private void logError(Throwable ex) {
+		log.error("User: xxxx\n", ex);
+	}
 	
 	private ResponseEntity<Object> getResponseEntity (HttpStatus status, Throwable ex, HttpServletRequest request) {
 		log.error("User: xxxx\nMethod: {}\nUri: {}", request.getMethod(), request.getRequestURI(), ex);
 		return new ResponseEntity<>(new ErrorResponse(status, ex), status);
+	}
+	
+	private ResponseEntity<Object> getResponseEntity (ErrorResponse response, Throwable ex, HttpServletRequest request) {
+		log.error("User: xxxx\nMethod: {}\nUri: {}", request.getMethod(), request.getRequestURI(), ex);
+		return new ResponseEntity<>(response, response.getStatus());
+	}
+	
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	public ResponseEntity<Object> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex, HttpServletRequest request) {
+		logError(ex);
+		ErrorResponse response = new ErrorResponse(HttpStatus.BAD_REQUEST, ex);
+		response.setErrors(ex.getBindingResult().getFieldErrors().stream().map(er -> new FieldErrorResponse(er)).collect(Collectors.toList()));
+		response.setMessage("Invalid field value");
+		return getResponseEntity(response, ex, request);
 	}
 
 	@ExceptionHandler(EntityNotFoundException.class)

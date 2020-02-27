@@ -3,13 +3,9 @@ package appbeta.blog.entity;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
-import java.util.List;
-import java.util.Set;
-import javax.persistence.ManyToMany;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name="role")
@@ -19,6 +15,7 @@ public class Role {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 	
+	@NotNull
 	private String name;
 	
 	public Role() {}

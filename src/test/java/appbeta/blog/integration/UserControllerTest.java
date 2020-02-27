@@ -3,9 +3,11 @@ package appbeta.blog.integration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 
+//import static org.junit.Assert.assertTrue;
 //import static org.junit.Assert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -13,6 +15,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -44,6 +47,8 @@ import appbeta.blog.error.ErrorResponse;
 import com.jayway.jsonpath.JsonPath;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
+import org.hamcrest.Matchers;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -117,7 +122,7 @@ public class UserControllerTest {
 	
 	@Test
 	@Sql(scripts="/sql/test_db_schema.sql")
-	public void PostNewUser() throws JsonMappingException, JsonProcessingException {
+	public void AddNewUser() throws JsonMappingException, JsonProcessingException {
 		User u = new User();
 		Date date = new Date();
 		u.setLogin("new_test_user" + new Timestamp(date.getTime()));
@@ -138,6 +143,29 @@ public class UserControllerTest {
 		User newUser = objectMapper.readValue(response.getBody().toString(), User.class); 
 		assertNotEquals(0, newUser.getId());
 		assertNotEquals(null, newUser.getId());
+	}
+	
+	//TODO
+	@Test
+	public void AddUserWithRoleUser() throws JSONException {
+		// given
+		ObjectNode jsonObj = objectMapper.createObjectNode();
+		jsonObj.put("login", "AddUserWithRole_login");
+		jsonObj.put("password", "AddUserWithRole_password");
+		jsonObj.putArray("roles").add("ROLE_USER");
+		String json = jsonObj.toString();
+		// when
+		ResponseEntity <String> response = restTemplate.postForEntity("/user", json, String.class);
+		
+		// then
+		assertEquals(HttpStatus.OK, response.getStatusCode());
+		assertEquals(MediaType.APPLICATION_JSON, response.getHeaders().getContentType());
+		JSONAssert.assertEquals(json, response.getBody().toString(), false);
+		assertTrue(isNumericString(JsonPath.read(json, "$.id").toString()));
+	}
+	
+	private boolean isNumericString(String string) {
+		return Pattern.compile("\\d+").matcher(string).matches();
 	}
 	
 	@Test

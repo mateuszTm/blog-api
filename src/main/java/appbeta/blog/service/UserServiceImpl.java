@@ -1,14 +1,12 @@
 package appbeta.blog.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import javax.persistence.EntityNotFoundException;
 
 import appbeta.blog.dao.UserRepository;
 import appbeta.blog.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 

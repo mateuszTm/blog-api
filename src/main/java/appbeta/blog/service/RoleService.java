@@ -11,4 +11,6 @@ public interface RoleService {
 	public void remove (Role role);
 	
 	public List <Role> getAllRoles ();
+	
+	public Role getRoleByName(String name);
 }

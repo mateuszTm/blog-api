@@ -1,6 +1,9 @@
 package appbeta.blog.service;
 
 import java.util.List;
+import java.util.Optional;
+
+import javax.persistence.EntityNotFoundException;
 
 import appbeta.blog.dao.RoleRepository;
 import appbeta.blog.entity.Role;
@@ -31,6 +34,12 @@ public class RoleServiceImpl implements RoleService {
 	@Transactional
 	public List<Role> getAllRoles() {
 		return roleRepository.findAll();
+	}
+
+	@Override
+	public Role getRoleByName(String name) {
+		Optional <Role> role = roleRepository.findByName(name);
+		return role.orElseThrow(() -> new EntityNotFoundException("Role name " + name + " has not been found"));
 	}
 
 }

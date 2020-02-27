@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PathVariable;
 import java.util.List;
 
-import javax.persistence.EntityNotFoundException;
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -34,7 +34,7 @@ public class UserController {
 	}
 
 	@PostMapping()
-	public User add(@RequestBody User user) {
+	public User add(@Valid @RequestBody User user) {
 		user.setId(null);
 		userService.save(user);
 		return user;
@@ -42,7 +42,7 @@ public class UserController {
 	
 	
 	@PutMapping()
-	public User edit(@RequestBody User user) {
+	public User edit(@Valid @RequestBody User user) {
 		return userService.updateUser(user);
 	}
 	
