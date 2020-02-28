@@ -2,7 +2,8 @@ package appbeta.blog.entity;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -27,10 +28,10 @@ public class User {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 	
-	@NotNull()
+	@NotBlank()
 	private String login;
 	
-	@NotNull()
+	@NotBlank()
 	private String password;
 	
 	private boolean locked;
@@ -39,6 +40,7 @@ public class User {
 	private List<Post> posts;
 	
 	// TODO przemyśleć czy powinno być fetchType.EAGER?
+	@NotEmpty
 	@ManyToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
 	@JoinTable(
 			name="user_role",

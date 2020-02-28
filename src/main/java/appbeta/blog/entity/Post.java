@@ -7,6 +7,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import java.time.LocalDateTime;
 import javax.persistence.Lob;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.persistence.ManyToOne;
 import javax.persistence.JoinColumn;
@@ -24,12 +25,12 @@ public class Post {
 
 	private LocalDateTime date;
 	
-	@NotNull
+	@NotBlank
 	private String title;
 	
 	// TODO dodać pole krótki opis
 	// TODO content powinno być lazy loading
-	@NotNull
+	@NotBlank
 	@Lob
 	private String content;
 	
