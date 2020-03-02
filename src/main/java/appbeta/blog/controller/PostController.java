@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 @RestController
 @RequestMapping("/post")
-public class Post {
+public class PostController {
 
 	// TODO
 //	public String add() {}
