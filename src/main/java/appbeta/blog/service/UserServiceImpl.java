@@ -62,7 +62,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	@Transactional
 	public User findUserByLogin(String login) {
-		return userRepository.findByLogin(login);
+		return userRepository.findByLogin(login).orElseThrow(() -> (new EntityNotFoundException("User with login '" + login + "' has not been found")));
 	}
 	
 	@Override

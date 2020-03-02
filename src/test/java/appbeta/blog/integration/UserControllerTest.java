@@ -122,31 +122,34 @@ public class UserControllerTest {
 	
 	@Test
 	@Sql(scripts="/sql/test_db_schema.sql")
-	public void AddNewUser() throws JsonMappingException, JsonProcessingException {
+	public void FailToAddUserWithoutRoles() throws JsonMappingException, JsonProcessingException, JSONException {
 		User u = new User();
 		Date date = new Date();
 		u.setLogin("new_test_user" + new Timestamp(date.getTime()));
 		u.setPassword("new_test_user");
 		u.setPosts(new ArrayList<Post>());
-		Role r = new Role("ROLE_USER");
-		r.setId(2L);
 		
-//		Set<Role> roles = new HashSet<Role>();
-//		roles.add(r);
-//		u.setRoles(roles);
-		
-//		System.out.println(objectMapper.writeValueAsString(u));
+		ObjectNode jsonErrorObj = getJsonObject().
+				put("status", "BAD_REQUEST").
+				put("message", "Invalid field value");
+		jsonErrorObj.putArray("errors").add(getJsonObject().
+				put("message", "must not be empty").
+				put("objectName", "user").
+				put("fieldName", "roles").
+				put("rejectedValue", "null"));
+		String jsonError = jsonErrorObj.toString();
 		
 		ResponseEntity response = restTemplate.postForEntity("/user", u, String.class);
+		String jsonResponse = response.getBody().toString();
 		
-		assertEquals(HttpStatus.OK, response.getStatusCode());
-		User newUser = objectMapper.readValue(response.getBody().toString(), User.class); 
-		assertNotEquals(0, newUser.getId());
-		assertNotEquals(null, newUser.getId());
+		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+		JSONAssert.assertEquals(jsonError, jsonResponse, false);
+		assertThat(jsonResponse).contains("timestamp");
 	}
 	
 	//TODO
 	@Test
+	@Sql(scripts="/sql/test_db_schema.sql")
 	public void AddUserWithRoleUser() throws JSONException {
 		// given
 		ObjectNode jsonObj = objectMapper.createObjectNode();
@@ -154,37 +157,56 @@ public class UserControllerTest {
 		jsonObj.put("password", "AddUserWithRole_password");
 		jsonObj.putArray("roles").add("ROLE_USER");
 		String json = jsonObj.toString();
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		
 		// when
-		ResponseEntity <String> response = restTemplate.postForEntity("/user", json, String.class);
+		ResponseEntity <String> response = restTemplate.exchange("/user", HttpMethod.POST, new HttpEntity<>(json, headers), String.class);
+		
+		System.out.println(response.getBody().toString());
 		
 		// then
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 		assertEquals(MediaType.APPLICATION_JSON, response.getHeaders().getContentType());
-		JSONAssert.assertEquals(json, response.getBody().toString(), false);
-		assertTrue(isNumericString(JsonPath.read(json, "$.id").toString()));
+		String responseJson = response.getBody().toString();
+		JSONAssert.assertEquals(json, responseJson, false);
+		assertThat(response.getBody().toString()).containsPattern("id\":\\d+");
+		
 	}
 	
 	private boolean isNumericString(String string) {
 		return Pattern.compile("\\d+").matcher(string).matches();
 	}
 	
+	private ObjectNode getJsonObject() {
+		return objectMapper.createObjectNode();
+	}
+	
 	@Test
 	@Sql(scripts="/sql/test_db_schema.sql")
 	public void updateUser() throws JsonProcessingException, JSONException {
-		User u = new User();
-		u.setLogin("test_user-EDITED");
-		u.setPassword("test_user-EDITED");
-		u.setId(1L);
-		u.setLocked(false);
+//		User u = new User();
+//		u.setLogin("test_user-EDITED");
+//		u.setPassword("test_user-EDITED");
+//		u.setId(1L);
+//		u.setLocked(false);
+		
+		ObjectNode jsonObj = getJsonObject().
+				put("id", 2).
+				put("login", "test_user-EDITED").
+				put("password", "test_user-EDITED");
+		jsonObj.putArray("posts");
+		jsonObj.putArray("roles").
+				add("ROLE_USER");
+		String json = jsonObj.toString();
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
-		String encodedUser = objectMapper.writeValueAsString(u);
-		HttpEntity httpEntity = new HttpEntity<>(encodedUser, headers);
+		HttpEntity httpEntity = new HttpEntity<>(json, headers);
 		
 		ResponseEntity response = restTemplate.exchange("/user", HttpMethod.PUT, httpEntity, String.class);
 		
 		assertEquals(HttpStatus.OK, response.getStatusCode());
-		JSONAssert.assertEquals(encodedUser, response.getBody().toString(), false);
+		JSONAssert.assertEquals(json, response.getBody().toString(), false);
 	}
 	
 	@Test

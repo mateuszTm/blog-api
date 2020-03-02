@@ -6,7 +6,7 @@ import appbeta.blog.entity.User;
 
 public interface UserRepository extends JpaRepository<User, Long>{
 
-	public User findByLogin(String login);
+	public Optional <User> findByLogin(String login);
 	
 	public Optional <User> findById(Long id);
 }

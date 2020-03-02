@@ -13,16 +13,19 @@ import javax.persistence.ManyToOne;
 import javax.persistence.JoinColumn;
 import javax.persistence.CascadeType;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
 @Table(name="post")
-@JsonIgnoreProperties(value= {"date"}, allowGetters = true)
+//@JsonIgnoreProperties(value= {"date"}, allowGetters = true)
 public class Post {
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy hh:mm:ss")
+	@NotBlank
 	private LocalDateTime date;
 	
 	@NotBlank

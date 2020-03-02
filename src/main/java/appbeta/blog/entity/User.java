@@ -5,7 +5,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.Id;
 import javax.persistence.GeneratedValue;
@@ -21,7 +21,6 @@ import javax.persistence.FetchType;
 
 @Entity
 @Table(name="user")
-@JsonIgnoreProperties(value= {"locked"})
 public class User {
 
 	@Id
@@ -34,6 +33,7 @@ public class User {
 	@NotBlank()
 	private String password;
 	
+	@JsonIgnore
 	private boolean locked;
 	
 	@OneToMany(mappedBy="user", fetch=FetchType.LAZY)
@@ -88,6 +88,7 @@ public class User {
 	public void setLocked(boolean locked) {
 		this.locked = locked;
 	}
+	
 	
 	public Set<Role> getRoles() {
 		return roles;
