@@ -3,6 +3,7 @@ package appbeta.blog.error;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.server.ResponseStatusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -49,7 +50,15 @@ public class ApiExceptionHandler {
 	
 	@ExceptionHandler(EmptyResultDataAccessException.class)
 	public ResponseEntity <Object> handleEmptyResultData(EmptyResultDataAccessException ex, HttpServletRequest request) {
-		return getResponseEntity(HttpStatus.NOT_FOUND, ex, request);
+		return getResponseEntity(new ErrorResponse(HttpStatus.NOT_FOUND, "Resource not found"), ex, request);
+	}
+	
+	@ExceptionHandler(ResponseStatusException.class)
+	public ResponseEntity <Object> responseStatusExceptiontHandler (ResponseStatusException exception, HttpServletRequest request) {
+		ErrorResponse response = new ErrorResponse();
+		response.setStatus(exception.getStatus());
+		response.setMessage(exception.getReason());
+		return getResponseEntity(response, exception, request);
 	}
 	
 	@ExceptionHandler(Exception.class)

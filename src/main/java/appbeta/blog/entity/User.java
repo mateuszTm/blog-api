@@ -13,7 +13,6 @@ import javax.persistence.GenerationType;
 import java.util.List;
 import javax.persistence.OneToMany;
 import javax.persistence.ManyToMany;
-import javax.persistence.CascadeType;
 import javax.persistence.JoinTable;
 import javax.persistence.JoinColumn;
 import java.util.Set;
@@ -36,12 +35,13 @@ public class User {
 	@JsonIgnore
 	private boolean locked;
 	
+	@JsonIgnore
 	@OneToMany(mappedBy="user", fetch=FetchType.LAZY)
 	private List<Post> posts;
 	
 	// TODO przemyśleć czy powinno być fetchType.EAGER?
 	@NotEmpty
-	@ManyToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+	@ManyToMany(fetch=FetchType.EAGER)
 	@JoinTable(
 			name="user_role",
 			joinColumns=@JoinColumn(name="user_id"),
@@ -98,17 +98,17 @@ public class User {
 		this.roles = roles;
 	}
 
-	public List<Post> getPosts() {
-		return posts;
-	}
-
-	public void setPosts(List<Post> posts) {
-		this.posts = posts;
-	}
-	
-	public User addPost(Post post) {
-		this.posts.add(post);
-		post.setUser(this);
-		return this;
-	}	
+//	public List<Post> getPosts() {
+//		return posts;
+//	}
+//
+//	public void setPosts(List<Post> posts) {
+//		this.posts = posts;
+//	}
+//	
+//	public User addPost(Post post) {
+//		this.posts.add(post);
+//		post.setUser(this);
+//		return this;
+//	}	
 }

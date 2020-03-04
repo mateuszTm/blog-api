@@ -6,7 +6,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
-import java.time.LocalDateTime;
+import java.util.Date;
+import java.sql.Timestamp;
 import java.util.List;
 
 
@@ -15,7 +16,7 @@ public class ErrorResponse {
 	private HttpStatus status;
 	
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
-	private LocalDateTime timestamp;
+	private Timestamp timestamp;
 	
 	private String message;
 
@@ -23,7 +24,7 @@ public class ErrorResponse {
 	private List<AbstractErrorResponse> errors;
 	
 	public ErrorResponse () {
-		timestamp = LocalDateTime.now();
+		timestamp = new Timestamp(new Date().getTime());
 	}
 	
 	public ErrorResponse (HttpStatus status, String message) {
@@ -60,11 +61,11 @@ public class ErrorResponse {
 		this.status = status;
 	}
 
-	public LocalDateTime getTimestamp() {
+	public Timestamp getTimestamp() {
 		return timestamp;
 	}
 
-	public void setTimestamp(LocalDateTime timestamp) {
+	public void setTimestamp(Timestamp timestamp) {
 		this.timestamp = timestamp;
 	}
 

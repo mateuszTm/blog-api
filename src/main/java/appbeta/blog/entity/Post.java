@@ -5,46 +5,45 @@ import javax.persistence.Table;
 import javax.persistence.Id;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
-import java.time.LocalDateTime;
+
+import java.sql.Timestamp;
 import javax.persistence.Lob;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.persistence.ManyToOne;
 import javax.persistence.JoinColumn;
-import javax.persistence.CascadeType;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import javax.persistence.FetchType;
 
 @Entity
 @Table(name="post")
-//@JsonIgnoreProperties(value= {"date"}, allowGetters = true)
 public class Post {
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy hh:mm:ss")
-	@NotBlank
-	private LocalDateTime date;
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+	private Timestamp date;
 	
 	@NotBlank
 	private String title;
 	
-	// TODO dodać pole krótki opis
-	// TODO content powinno być lazy loading
 	@NotBlank
 	@Lob
 	private String content;
 	
+	@JsonIgnore
 	@NotNull
-	@ManyToOne(cascade=CascadeType.ALL)
+	@ManyToOne(fetch=FetchType.EAGER)
 	@JoinColumn(name="user_id")
 	private User user;
 
 	public Post() {}
 
-	public Post(LocalDateTime date, String title, String content) {
+	public Post(Timestamp date, String title, String content) {
 		this.date = date;
 		this.title = title;
 		this.content = content;
@@ -58,11 +57,11 @@ public class Post {
 		this.id = id;
 	}
 
-	public LocalDateTime getDate() {
+	public Timestamp getDate() {
 		return date;
 	}
 
-	public void setDate(LocalDateTime date) {
+	public void setDate(Timestamp date) {
 		this.date = date;
 	}
 

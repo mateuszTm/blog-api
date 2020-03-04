@@ -10,14 +10,11 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import javax.persistence.EntityNotFoundException;
 
 import org.json.JSONException;
 import org.junit.jupiter.api.Test;
@@ -39,10 +36,8 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import appbeta.blog.entity.Post;
 import appbeta.blog.entity.Role;
 import appbeta.blog.entity.User;
-import appbeta.blog.error.ErrorResponse;
 
 import com.jayway.jsonpath.JsonPath;
 
@@ -61,19 +56,19 @@ public class UserControllerTest {
 	TestRestTemplate restTemplate;
 	
 	@Test
-	@Sql(scripts="/sql/test_db_schema.sql")
+	@Sql(scripts="classpath:sql/userController_functional.sql")
 	public void getAllUsers() throws JSONException, JsonProcessingException {
 		User u1 = new User();
 		u1.setId(1L);
 		u1.setLogin("test_admin");
 		u1.setPassword("test_admin");
-		u1.setPosts(new ArrayList<Post>());
+//		u1.setPosts(new ArrayList<Post>());
 		
 		User u2 = new User();
 		u2.setId(2L);
 		u2.setLogin("test_user");
 		u2.setPassword("test_user");
-		u2.setPosts(new ArrayList<Post>());
+//		u2.setPosts(new ArrayList<Post>());
 		
 		Role role1 = new Role("ROLE_ADMIN");
 		role1.setId(1L);
@@ -121,13 +116,13 @@ public class UserControllerTest {
 	}
 	
 	@Test
-	@Sql(scripts="/sql/test_db_schema.sql")
+	@Sql(scripts="classpath:sql/userController_functional.sql")
 	public void FailToAddUserWithoutRoles() throws JsonMappingException, JsonProcessingException, JSONException {
 		User u = new User();
 		Date date = new Date();
 		u.setLogin("new_test_user" + new Timestamp(date.getTime()));
 		u.setPassword("new_test_user");
-		u.setPosts(new ArrayList<Post>());
+//		u.setPosts(new ArrayList<Post>());
 		
 		ObjectNode jsonErrorObj = getJsonObject().
 				put("status", "BAD_REQUEST").
@@ -149,7 +144,7 @@ public class UserControllerTest {
 	
 	//TODO
 	@Test
-	@Sql(scripts="/sql/test_db_schema.sql")
+	@Sql(scripts="classpath:sql/userController_functional.sql")
 	public void AddUserWithRoleUser() throws JSONException {
 		// given
 		ObjectNode jsonObj = objectMapper.createObjectNode();
@@ -183,7 +178,7 @@ public class UserControllerTest {
 	}
 	
 	@Test
-	@Sql(scripts="/sql/test_db_schema.sql")
+	@Sql(scripts="classpath:sql/userController_functional.sql")
 	public void updateUser() throws JsonProcessingException, JSONException {
 //		User u = new User();
 //		u.setLogin("test_user-EDITED");
@@ -195,7 +190,6 @@ public class UserControllerTest {
 				put("id", 2).
 				put("login", "test_user-EDITED").
 				put("password", "test_user-EDITED");
-		jsonObj.putArray("posts");
 		jsonObj.putArray("roles").
 				add("ROLE_USER");
 		String json = jsonObj.toString();
@@ -210,7 +204,7 @@ public class UserControllerTest {
 	}
 	
 	@Test
-	@Sql(scripts="/sql/test_db_schema.sql")
+	@Sql(scripts="classpath:sql/userController_functional.sql")
 	public void deleteUser() {
 		
 		ResponseEntity response = restTemplate.exchange("/user/1", HttpMethod.DELETE, new HttpEntity(null, new HttpHeaders()), String.class);

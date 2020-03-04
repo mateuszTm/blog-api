@@ -16,6 +16,9 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	private UserRepository userRepository;
 	
+	@Autowired 
+	private PostService postService;
+	
 	private EntityNotFoundException getUserNotFoundException(Long id) {
 		return new EntityNotFoundException("User id " + id + " has not been found");
 	}
@@ -44,12 +47,14 @@ public class UserServiceImpl implements UserService {
 	@Override
 	@Transactional
 	public void remove(User user) {
+		postService.removeByUserId(user.getId());
 		userRepository.delete(user);
 	}
 	
 	@Override
 	@Transactional
 	public void removeById(Long id) {
+		postService.removeByUserId(id);
 		userRepository.deleteById(id);
 	}
 
