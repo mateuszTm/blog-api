@@ -22,7 +22,8 @@ public class PostServiceImpl implements PostService {
 	
 	@Override
 	@Transactional
-	public void save(Post post) {
+	public void add(Post post) {
+		post.setId(null);
 		postRepository.save(post);
 	}
 	

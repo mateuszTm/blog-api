@@ -61,6 +61,11 @@ public class ApiExceptionHandler {
 		return getResponseEntity(response, exception, request);
 	}
 	
+	@ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
+	public ResponseEntity <Object> defaultHandler (org.springframework.dao.DataIntegrityViolationException exception, HttpServletRequest request) {
+		return getResponseEntity(HttpStatus.BAD_REQUEST, exception.getRootCause(), request);
+	}
+	
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity <Object> defaultHandler (Exception exception, HttpServletRequest request) {
 		return getResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, exception, request);

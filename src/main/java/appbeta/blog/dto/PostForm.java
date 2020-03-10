@@ -12,20 +12,20 @@ import appbeta.blog.entity.Post;
 @JsonInclude(Include.NON_NULL)
 public class PostForm {
 	
-	private Long id;
+	protected Long id;
 
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-	private Timestamp date;
+	protected Timestamp date;
 	
 	@NotBlank
-	private String title;
+	protected String title;
 	
 	@NotBlank
-	private String content;
+	protected String content;
 	
-	private Long userId;
+	protected Long userId;
 	
-	private String userName;
+	protected String userName;
 	
 	public PostForm () {}
 	

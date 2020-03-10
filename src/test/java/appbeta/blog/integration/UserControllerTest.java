@@ -1,5 +1,6 @@
 package appbeta.blog.integration;
 
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 
@@ -8,6 +9,16 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.sql.Timestamp;
 import java.util.Date;
@@ -27,6 +38,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.junit.runner.RunWith;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
@@ -45,169 +58,164 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.hamcrest.Matchers;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest
+@AutoConfigureMockMvc
+@Sql(scripts="classpath:sql/userController_functional.sql")
 public class UserControllerTest {
+	
+	@Autowired
+	private MockMvc mockMvc;
 
 	@Autowired
 	ObjectMapper objectMapper;
 	
-	@Autowired
-	TestRestTemplate restTemplate;
+	private String url = "/user";
 	
-	@Test
-	@Sql(scripts="classpath:sql/userController_functional.sql")
-	public void getAllUsers() throws JSONException, JsonProcessingException {
-		User u1 = new User();
-		u1.setId(1L);
-		u1.setLogin("test_admin");
-		u1.setPassword("test_admin");
-//		u1.setPosts(new ArrayList<Post>());
-		
-		User u2 = new User();
-		u2.setId(2L);
-		u2.setLogin("test_user");
-		u2.setPassword("test_user");
-//		u2.setPosts(new ArrayList<Post>());
-		
-		Role role1 = new Role("ROLE_ADMIN");
-		role1.setId(1L);
-		Role role2 = new Role("ROLE_USER");
-		role2.setId(2L);
-		
-		Set<Role> roles1 = new HashSet<Role>();
-		roles1.add(role1);
-		u1.setRoles(roles1);
-		
-		Set<Role> roles2 = new HashSet<Role>();
-		roles2.add(role2);
-		u2.setRoles(roles2);
-//		
-		String expectedJson = objectMapper.writeValueAsString(new User[] {u1, u2});
-		
-//		String expectedJson = "[{\"id\":1,\"login\":\"test_admin\",\"password\":\"test_admin\",\"posts\":[],\"roles\":[{\"id\":1,\"name\":\"ROLE_ADMIN\"}]},{\"id\":2,\"login\":\"test_user\",\"password\":\"test_user\",\"posts\":[],\"roles\":[{\"id\":2,\"name\":\"ROLE_USER\"}]}]";
-		
-		ResponseEntity response = restTemplate.getForEntity("/user/", String.class);
-		
-		assertEquals(HttpStatus.OK, response.getStatusCode());
-		assertEquals(MediaType.APPLICATION_JSON, response.getHeaders().getContentType());
-		
-		JSONAssert.assertEquals(expectedJson, response.getBody().toString(), JSONCompareMode.LENIENT);
-	}
-	
-	@Test
-	public void FailToGetUnexistingUser() throws JSONException, JsonProcessingException {
-		//given
-		Long userId = 99999999L;
-		ObjectNode expectedJson = objectMapper.createObjectNode();
-		expectedJson.put("status", "NOT_FOUND");
-		expectedJson.put("message", "User id " + userId + " has not been found");
-		String expected = objectMapper.writeValueAsString(expectedJson);
-		// when
-		ResponseEntity response = restTemplate.getForEntity("/user/" + userId, String.class);
-		
-		// then
-		assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-		assertEquals(MediaType.APPLICATION_JSON, response.getHeaders().getContentType());
-		String actual = response.getBody().toString();
-		JSONAssert.assertEquals(expected, actual, false);
-		
-		assertThat(actual).contains("\"timestamp\":");
-	}
-	
-	@Test
-	@Sql(scripts="classpath:sql/userController_functional.sql")
-	public void FailToAddUserWithoutRoles() throws JsonMappingException, JsonProcessingException, JSONException {
-		User u = new User();
-		Date date = new Date();
-		u.setLogin("new_test_user" + new Timestamp(date.getTime()));
-		u.setPassword("new_test_user");
-//		u.setPosts(new ArrayList<Post>());
-		
-		ObjectNode jsonErrorObj = getJsonObject().
-				put("status", "BAD_REQUEST").
-				put("message", "Invalid field value");
-		jsonErrorObj.putArray("errors").add(getJsonObject().
-				put("message", "must not be empty").
-				put("objectName", "user").
-				put("fieldName", "roles").
-				put("rejectedValue", "null"));
-		String jsonError = jsonErrorObj.toString();
-		
-		ResponseEntity response = restTemplate.postForEntity("/user", u, String.class);
-		String jsonResponse = response.getBody().toString();
-		
-		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-		JSONAssert.assertEquals(jsonError, jsonResponse, false);
-		assertThat(jsonResponse).contains("timestamp");
-	}
-	
-	//TODO
-	@Test
-	@Sql(scripts="classpath:sql/userController_functional.sql")
-	public void AddUserWithRoleUser() throws JSONException {
-		// given
-		ObjectNode jsonObj = objectMapper.createObjectNode();
-		jsonObj.put("login", "AddUserWithRole_login");
-		jsonObj.put("password", "AddUserWithRole_password");
-		jsonObj.putArray("roles").add("ROLE_USER");
-		String json = jsonObj.toString();
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		
-		// when
-		ResponseEntity <String> response = restTemplate.exchange("/user", HttpMethod.POST, new HttpEntity<>(json, headers), String.class);
-		
-		System.out.println(response.getBody().toString());
-		
-		// then
-		assertEquals(HttpStatus.OK, response.getStatusCode());
-		assertEquals(MediaType.APPLICATION_JSON, response.getHeaders().getContentType());
-		String responseJson = response.getBody().toString();
-		JSONAssert.assertEquals(json, responseJson, false);
-		assertThat(response.getBody().toString()).containsPattern("id\":\\d+");
-		
-	}
-	
-	private boolean isNumericString(String string) {
-		return Pattern.compile("\\d+").matcher(string).matches();
-	}
-	
-	private ObjectNode getJsonObject() {
+	private ObjectNode getJsonObj() {
 		return objectMapper.createObjectNode();
 	}
 	
-	@Test
-	@Sql(scripts="classpath:sql/userController_functional.sql")
-	public void updateUser() throws JsonProcessingException, JSONException {
-//		User u = new User();
-//		u.setLogin("test_user-EDITED");
-//		u.setPassword("test_user-EDITED");
-//		u.setId(1L);
-//		u.setLocked(false);
-		
-		ObjectNode jsonObj = getJsonObject().
-				put("id", 2).
-				put("login", "test_user-EDITED").
-				put("password", "test_user-EDITED");
-		jsonObj.putArray("roles").
-				add("ROLE_USER");
-		String json = jsonObj.toString();
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		HttpEntity httpEntity = new HttpEntity<>(json, headers);
-		
-		ResponseEntity response = restTemplate.exchange("/user", HttpMethod.PUT, httpEntity, String.class);
-		
-		assertEquals(HttpStatus.OK, response.getStatusCode());
-		JSONAssert.assertEquals(json, response.getBody().toString(), false);
+	protected ObjectNode getRoleUserJson() {
+		return objectMapper.createObjectNode()
+				.put("id", 2)
+				.put("name", "ROLE_USER");
+	}
+	
+	protected ObjectNode getRoleAdminJson() {
+		return objectMapper.createObjectNode()
+				.put("id", 1)
+				.put("name", "ROLE_ADMIN");
+	}
+	
+	protected ObjectNode getAdminJson() {
+		ObjectNode json = getJsonObj()
+				.put("id", 1)
+				.put("login", "test_admin")
+				.put("password", "test_admin");
+		json.putArray("roles")
+			.add(getRoleAdminJson());
+		return json;
+	}
+	
+	protected ObjectNode getUserJson() {
+		ObjectNode json = getJsonObj()
+				.put("id", 2)
+				.put("login", "test_user")
+				.put("password", "test_user");
+		json.putArray("roles")
+			.add(getRoleUserJson());
+		return json;
 	}
 	
 	@Test
-	@Sql(scripts="classpath:sql/userController_functional.sql")
-	public void deleteUser() {
+	public void getAllUsers() throws Exception {
+		ObjectNode jsonAdmin = getAdminJson();
+		ObjectNode jsonUser = getUserJson();
+		//		
+		ObjectNode content = getJsonObj();
+		content.putArray("content")
+			.add(getAdminJson())
+			.add(getUserJson());
+		String jsonContent = content.toString();
 		
-		ResponseEntity response = restTemplate.exchange("/user/1", HttpMethod.DELETE, new HttpEntity(null, new HttpHeaders()), String.class);
-		assertEquals(HttpStatus.OK, response.getStatusCode());
+		mockMvc.perform(
+				get(url)
+				.param("sort", "id,asc"))
+			.andDo(print())
+			.andExpect(status().isOk())
+			.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+			.andExpect(jsonPath("$.totalElements").value(2))
+			.andExpect(jsonPath("$.numberOfElements").value(2))
+			.andExpect(jsonPath("$.number").value(0))
+			.andExpect(content().json(jsonContent, false));
+	}
+	
+	@Test
+	public void FailToGetUnexistingUser() throws Exception {
+		//given
+		Long fakeId = 99999999L;
+		String errorJson = getJsonObj()
+				.put("status", "NOT_FOUND")
+				.put("message", "User id " + fakeId + " has not been found")
+				.toString();
+		
+		mockMvc.perform(
+				get(url + "/" + fakeId))
+			.andDo(print())
+			.andExpect(status().isNotFound())
+			.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+			.andExpect(content().json(errorJson, false))
+			.andExpect(jsonPath("$.timestamp").isString());
+	}
+	
+	@Test
+	public void FailToAddUserWithoutRoles() throws Exception {
+		String jsonUser = getJsonObj()
+				.put("login", "new_test_user")
+				.put("password", "new_test_user")
+				.toString();
+		
+		ObjectNode error = getJsonObj()
+				.put("status", "BAD_REQUEST")
+				.put("message", "Invalid field value");
+		error.putArray("errors").add(getJsonObj()
+				.put("message", "must not be empty")
+				.put("objectName", "user")
+				.put("fieldName", "roles")
+				.put("rejectedValue", "null"));
+		String jsonError = error.toString();
+		
+		mockMvc.perform(
+				post(url)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(jsonUser))
+			.andDo(print())
+			.andExpect(status().isBadRequest())
+			.andExpect(content().json(jsonError, false))
+			.andExpect(jsonPath("$.timestamp").isString());
+	}
+	
+	@Test
+	public void AddUserWithRoleUser() throws Exception {		
+		ObjectNode user = getJsonObj()
+				.put("login", "AddUserWithRole_login")
+				.put("password", "AddUserWithRole_password");
+		user.putArray("roles").add(getRoleUserJson());
+		String jsonUser = user.toString();
+		
+		mockMvc.perform(
+				post(url)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(jsonUser))
+			.andDo(print())
+			.andExpect(status().isOk())
+			.andExpect(content().json(jsonUser, false))
+			.andExpect(jsonPath("$.id").isNumber());
+	}
+	
+	@Test
+	public void updateUser() throws Exception {		
+		ObjectNode user = getUserJson()
+				.put("login", "test_user-EDITED")
+				.put("password", "test_user-EDITED");
+		int id = user.get("id").asInt();
+		String jsonUser = user.toString();
+		
+		mockMvc.perform(
+				put(url + "/" + id)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(jsonUser))
+			.andDo(print())
+			.andExpect(status().isOk())
+			.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+			.andExpect(content().json(jsonUser, false));
+	}
+	
+	@Test
+	public void deleteUser() throws Exception{
+		mockMvc.perform(
+				delete(url + "/1"))
+			.andDo(print())
+			.andExpect(status().isOk());
 	}
 }

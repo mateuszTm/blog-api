@@ -1,8 +1,8 @@
 package appbeta.blog.controller;
 
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
+import appbeta.blog.dto.AddPostForm;
 import appbeta.blog.dto.PostForm;
 import appbeta.blog.entity.Post;
 import appbeta.blog.service.PostService;
@@ -16,12 +16,14 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.DeleteMapping;
 
+import java.sql.Timestamp;
+import java.util.Date;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 
 @RestController
 @RequestMapping("/post")
@@ -34,30 +36,24 @@ public class PostController {
 	private UserService userService;
 	
 	@PostMapping
-	public PostForm add(@Valid @RequestBody PostForm postForm) {
-		if (postForm.getUserId() == null) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Property 'userId' is required");
-		}
+	public PostForm add(@Valid @RequestBody AddPostForm postForm) {
 		Post post = new Post(
-					postForm.getDate(),
-					postForm.getTitle(),
-					postForm.getContent()
-				);
+						new Timestamp(new Date().getTime()),
+						postForm.getTitle(),
+						postForm.getContent()
+					);
 		post.setUser(userService.findUserById(postForm.getUserId()));
-		postService.save(post);
+		postService.add(post);
 		return new PostForm(post);
 	}
 	
-	@PutMapping
-	public PostForm edit(@RequestBody @Valid PostForm postForm) {
-		if (postForm.getId() == null) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Property 'id' is required");
-		}
+	@PutMapping("/{id}")
+	public PostForm edit(@Valid @RequestBody PostForm postForm, @PathVariable long id) {
 		postService.updatePostFields(
-				postForm.getId(), 
+				id, 
 				postForm.getTitle(), 
 				postForm.getContent());
-		return new PostForm(postService.getById(postForm.getId()));
+		return new PostForm(postService.getById(id));
 	}
 	
 	@DeleteMapping("/{id}")

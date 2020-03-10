@@ -1,12 +1,13 @@
 package appbeta.blog.service;
 
-import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
 
 import appbeta.blog.dao.UserRepository;
 import appbeta.blog.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -29,19 +30,19 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	@Transactional
-	public void save(User user) {
+	public void add(User user) {
+		user.setId(null);
 		userRepository.save(user);		
 	}
 	
 	@Override
 	@Transactional
-	public User updateUser(User user) {
+	public void updateUser(User user) {
 		if (userRepository.existsById(user.getId())) {
 			userRepository.save(user);
 		} else {
 			throw getUserNotFoundException(user);
 		}
-		return user;
 	}
 
 	@Override
@@ -60,8 +61,8 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	@Transactional
-	public List<User> getAllUsers() {
-		return userRepository.findAll();
+	public Page<User> getAllUsers(Pageable pageable) {
+		return userRepository.findAll(pageable);
 	}
 
 	@Override

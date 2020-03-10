@@ -1,7 +1,6 @@
 package appbeta.blog.service;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -13,6 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 @Service
 public class RoleServiceImpl implements RoleService {
 	
@@ -21,8 +23,18 @@ public class RoleServiceImpl implements RoleService {
 
 	@Override
 	@Transactional
-	public void save(Role role) {
+	public void add(Role role) {
+		role.setId(null);
 		roleRepository.save(role);
+	}
+	
+	@Override
+	public void update(Role role) {
+		if (roleRepository.existsById(role.getId())) {
+			roleRepository.save(role);
+		} else {
+			throw new EntityNotFoundException("Role " + role + " has not been found");
+		}
 	}
 
 	@Override
@@ -31,11 +43,16 @@ public class RoleServiceImpl implements RoleService {
 		roleRepository.delete(role);
 	}
 
-	// TODO sortowanie itp
 	@Override
 	@Transactional
-	public List<Role> getAllRoles() {
-		return roleRepository.findAll();
+	public void removeById (Long id) {
+		roleRepository.deleteById(id);
+	}
+	
+	@Override
+	@Transactional
+	public Page<Role> getAll(Pageable pageable) {
+		return roleRepository.findAll(pageable);
 	}
 
 	@Override
@@ -49,4 +66,8 @@ public class RoleServiceImpl implements RoleService {
 		return roleRepository.findByNameIn(name);
 	}
 
+	@Override
+	public Role getRoleByid (long id) {
+		return roleRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Role id " + id + " has not been found"));
+	}
 }

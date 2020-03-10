@@ -7,19 +7,14 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.validation.constraints.NotBlank;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonValue;
-
 @Entity
 @Table(name="role")
 public class Role {
 
-	@JsonIgnore
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 
-	@JsonValue
 	@NotBlank
 	private String name;
 	

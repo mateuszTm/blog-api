@@ -9,21 +9,21 @@ import appbeta.blog.entity.Post;
 
 public interface PostService {
 	
-	public void save (Post post);
+	public void add (Post post);
 	
-	public void update(Post post);
+	public void update (Post post);
 	
-	public void updatePostFields(Long id, String title, String content);
+	public void updatePostFields (Long id, String title, String content);
 	
 	public void remove (Post post);
 	
-	public void removeById(Long id);
+	public void removeById (Long id);
 	
-	public void removeByUserId(Long id);
+	public void removeByUserId (Long id);
 	
-	public List <Post> getAll();
+	public List <Post> getAll ();
 	
-	public Page<Post> getAll(Pageable pageable);
+	public Page<Post> getAll (Pageable pageable);
 	
-	public Post getById(Long id);
+	public Post getById (Long id);
 }
