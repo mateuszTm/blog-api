@@ -98,17 +98,17 @@ public class User {
 		this.roles = roles;
 	}
 
-//	public List<Post> getPosts() {
-//		return posts;
-//	}
-//
-//	public void setPosts(List<Post> posts) {
-//		this.posts = posts;
-//	}
-//	
-//	public User addPost(Post post) {
-//		this.posts.add(post);
-//		post.setUser(this);
-//		return this;
-//	}	
+	public List<Post> getPosts() {
+		return posts;
+	}
+
+	public void setPosts(List<Post> posts) {
+		this.posts = posts;
+	}
+	
+	public User addPost(Post post) {
+		this.posts.add(post);
+		post.setUser(this);
+		return this;
+	}	
 }
