@@ -15,6 +15,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.Set;
 
+import org.springframework.stereotype.Service;
+
+@Service
 public class CustomUserDetailsService implements UserDetailsService {
 	
 	@Autowired
