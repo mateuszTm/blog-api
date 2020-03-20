@@ -1,8 +1,10 @@
 package appbeta.blog.controller;
 
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import appbeta.blog.service.UserService;
+import appbeta.blog.entity.Role;
 import appbeta.blog.entity.User;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,12 +14,14 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 
 @RestController
 @RequestMapping("/user")
@@ -37,7 +41,12 @@ public class UserController {
 	}
 	
 	@PostMapping()
-	public User add(@Valid @RequestBody User user) {
+	public User add(@Valid @RequestBody User user, HttpServletRequest request) throws Exception {
+		for(Role r: user.getRoles()) {
+			if (r.getName().equals("ROLE_ADMIN") && !request.isUserInRole("ROLE_ADMIN")) {
+				throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Only ROLE_USER is allowed");
+			}
+		}		
 		userService.add(user);
 		return user;
 	}

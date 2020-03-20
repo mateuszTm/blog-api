@@ -17,6 +17,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.JoinColumn;
 import java.util.Set;
 import javax.persistence.FetchType;
+import javax.persistence.Lob;
 
 @Entity
 @Table(name="user")
@@ -26,10 +27,11 @@ public class User {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 	
-	@NotBlank()
+	@NotBlank
 	private String login;
 	
-	@NotBlank()
+	@NotBlank
+	@Lob
 	private String password;
 	
 	@JsonIgnore
