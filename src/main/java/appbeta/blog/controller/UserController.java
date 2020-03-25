@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.util.Collection;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
@@ -22,6 +24,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
 
 @RestController
 @RequestMapping("/user")
@@ -41,7 +46,7 @@ public class UserController {
 	}
 	
 	@PostMapping()
-	public User add(@Valid @RequestBody User user, HttpServletRequest request) throws Exception {
+	public User add(@Valid @RequestBody User user, HttpServletRequest request) throws Exception {			
 		for(Role r: user.getRoles()) {
 			if (r.getName().equals("ROLE_ADMIN") && !request.isUserInRole("ROLE_ADMIN")) {
 				throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Only ROLE_USER is allowed");

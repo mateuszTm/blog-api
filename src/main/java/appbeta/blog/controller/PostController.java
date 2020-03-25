@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.DeleteMapping;
 
+import java.security.Principal;
 import java.sql.Timestamp;
 import java.util.Date;
 
@@ -36,13 +37,13 @@ public class PostController {
 	private UserService userService;
 	
 	@PostMapping
-	public PostForm add(@Valid @RequestBody AddPostForm postForm) {
+	public PostForm add(@Valid @RequestBody AddPostForm addPostForm, Principal principal) {
 		Post post = new Post(
 						new Timestamp(new Date().getTime()),
-						postForm.getTitle(),
-						postForm.getContent()
+						addPostForm.getTitle(),
+						addPostForm.getContent()
 					);
-		post.setUser(userService.findUserById(postForm.getUserId()));
+		post.setUser(userService.findUserByLogin(principal.getName()));
 		postService.add(post);
 		return new PostForm(post);
 	}
@@ -69,6 +70,6 @@ public class PostController {
 	@GetMapping
 	public Page<PostForm> getPage(Pageable pageable) {
 		return postService.getAll(pageable)
-				.map(post -> new PostForm((Post)post));
+					.map(post -> new PostForm((Post)post));
 	}
 }

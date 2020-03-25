@@ -1,38 +1,35 @@
 package appbeta.blog.dto;
 
-import java.sql.Timestamp;
-
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
-import appbeta.blog.entity.Post;
+public class AddPostForm {
 
-public class AddPostForm extends PostForm{
+	@NotBlank
+	protected String title;
 	
-	@NotNull
-	protected Long userId;
+	@NotBlank
+	protected String content;
 	
-	public AddPostForm () {}
-	
-	public AddPostForm (Post post) {
-		date = post.getDate();
-		title = post.getTitle();
-		content = post.getContent();
-		userId = post.getUser().getId();
-	}
+	public AddPostForm() {}
 
-	public AddPostForm(Timestamp date, @NotBlank String title, @NotBlank String content,@NotNull Long userId) {
-		this.date = date;
+	public AddPostForm(@NotBlank String title, @NotBlank String content) {
 		this.title = title;
 		this.content = content;
-		this.userId = userId;
-	}
-	
-	public Long getUserId() {
-		return userId;
 	}
 
-	public void setUserId(Long userId) {
-		this.userId = userId;
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getContent() {
+		return content;
+	}
+
+	public void setContent(String content) {
+		this.content = content;
 	}
 }
