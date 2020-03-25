@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import appbeta.blog.service.UserService;
+import appbeta.blog.dto.EditUserForm;
 import appbeta.blog.entity.Role;
 import appbeta.blog.entity.User;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,6 +29,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 
+import java.security.Principal;
+
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -35,14 +38,14 @@ public class UserController {
 	@Autowired
 	private UserService userService;	
 	
-	@GetMapping()
-	public Page <User> getPage(Pageable pageable) {
-		return userService.getAllUsers(pageable);
-	}
-	
 	@GetMapping("/{id}")
 	public User get(@PathVariable Long id) {
 		return userService.findUserById(id);
+	}
+	
+	@GetMapping()
+	public Page <User> getPage(Pageable pageable) {
+		return userService.getAllUsers(pageable);
 	}
 	
 	@PostMapping()
@@ -64,9 +67,24 @@ public class UserController {
 		return user;
 	}
 	
+	@PutMapping
+	public User editSelf(@Valid @RequestBody EditUserForm userForm, @PathVariable long id, Principal principal) {
+		User user = userService.findUserByLogin(principal.getName());
+		user.setLogin(userForm.getLogin());
+		user.setPassword(userForm.getPassword());
+		userService.updateUser(user);
+		return user;
+	}
+	
 	@DeleteMapping("/{id}")
 	public void delete(@PathVariable Long id) {
 		userService.removeById(id);
+	}
+	
+	@DeleteMapping
+	public void deleteSelf(Principal principal) {
+		User user = userService.findUserByLogin(principal.getName());
+		userService.remove(user);
 	}
 	
 	// TODO Autoryzacja użytkownika OAuth
