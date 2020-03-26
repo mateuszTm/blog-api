@@ -36,3 +36,17 @@ CREATE TABLE `post` (
   KEY `fk_post_user_id` (`user_id`),
   CONSTRAINT `fk_post_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `oauth_client_details` (
+    `client_id` varchar(256) PRIMARY KEY,
+    `resource_ids` varchar(256),
+    `client_secret` varchar(256),
+    `scope` varchar(256),
+    `authorized_grant_types` varchar(256),
+    `web_server_redirect_uri` varchar(256),
+    `authorities` varchar(256),
+    `access_token_validity` int,
+    `refresh_token_validity` int,
+    `additional_information` varchar(4096),
+    `autoapprove` varchar(256)
+);

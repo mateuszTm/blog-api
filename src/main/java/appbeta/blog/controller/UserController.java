@@ -86,6 +86,4 @@ public class UserController {
 		User user = userService.findUserByLogin(principal.getName());
 		userService.remove(user);
 	}
-	
-	// TODO Autoryzacja użytkownika OAuth
 }
