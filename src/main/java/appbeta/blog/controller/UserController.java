@@ -39,8 +39,13 @@ public class UserController {
 	private UserService userService;	
 	
 	@GetMapping("/{id}")
-	public User get(@PathVariable Long id) {
+	public User get(@PathVariable Long id, Principal principal) {
 		return userService.findUserById(id);
+	}
+	
+	@GetMapping("/info")
+	public User getSelf(Principal principal) {
+		return userService.findUserByLogin(principal.getName());
 	}
 	
 	@GetMapping()

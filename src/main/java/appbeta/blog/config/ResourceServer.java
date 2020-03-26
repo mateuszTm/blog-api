@@ -22,9 +22,9 @@ public class ResourceServer extends ResourceServerConfigurerAdapter {
         http.anonymous().disable()
         	.authorizeRequests()
             .antMatchers(HttpMethod.POST, "/user").permitAll()
-            .antMatchers(HttpMethod.GET, "/post").permitAll()
-    	    .antMatchers("/user/**", "/post", "/post/**").hasAnyRole("ADMIN", "USER")
-    	    .antMatchers("/user", "/role", "/role/**").hasRole("ADMIN")
+            .antMatchers(HttpMethod.GET, "/post", "/user/info").permitAll()
+    	    .antMatchers("/post", "/post/**").hasAnyRole("ADMIN", "USER")
+    	    .antMatchers("/user", "/user/**", "/role", "/role/**").hasRole("ADMIN")
     	    .anyRequest().authenticated()
             .and().exceptionHandling().accessDeniedHandler(new OAuth2AccessDeniedHandler());;
 	}
