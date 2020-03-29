@@ -54,10 +54,11 @@ public class UserController {
 	}
 	
 	@PostMapping()
-	public User add(@Valid @RequestBody User user, HttpServletRequest request) throws Exception {			
+	public User add(@Valid @RequestBody User user, HttpServletRequest request) throws Exception {
+		String requiredRole = appbeta.blog.config.Role.ADMIN.authority;
 		for(Role r: user.getRoles()) {
-			if (r.getName().equals("ROLE_ADMIN") && !request.isUserInRole("ROLE_ADMIN")) {
-				throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Only ROLE_USER is allowed");
+			if (r.getName().equals(requiredRole) && !request.isUserInRole(requiredRole)) {
+				throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not authorized to add user with role " + r.getName());
 			}
 		}		
 		userService.add(user);

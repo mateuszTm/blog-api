@@ -26,7 +26,6 @@ public class AuthorizationServer extends AuthorizationServerConfigurerAdapter {
 	
 	@Bean
     public TokenStore tokenStore() {
-//        return new InMemoryTokenStore();
 		return new JdbcTokenStore(dataSource);
     }
 	
