@@ -6,14 +6,13 @@ import javax.persistence.Id;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 
-import java.sql.Timestamp;
+import java.time.Instant;
+
 import javax.persistence.Lob;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.persistence.ManyToOne;
 import javax.persistence.JoinColumn;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.FetchType;
 
@@ -25,8 +24,7 @@ public class Post {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-	private Timestamp date;
+	private Instant date;
 	
 	@NotBlank
 	private String title;
@@ -35,7 +33,6 @@ public class Post {
 	@Lob
 	private String content;
 	
-	@JsonIgnore
 	@NotNull
 	@ManyToOne(fetch=FetchType.EAGER)
 	@JoinColumn(name="user_id")
@@ -43,7 +40,7 @@ public class Post {
 
 	public Post() {}
 
-	public Post(Timestamp date, String title, String content) {
+	public Post(Instant date, String title, String content) {
 		this.date = date;
 		this.title = title;
 		this.content = content;
@@ -57,11 +54,11 @@ public class Post {
 		this.id = id;
 	}
 
-	public Timestamp getDate() {
+	public Instant getDate() {
 		return date;
 	}
 
-	public void setDate(Timestamp date) {
+	public void setDate(Instant date) {
 		this.date = date;
 	}
 

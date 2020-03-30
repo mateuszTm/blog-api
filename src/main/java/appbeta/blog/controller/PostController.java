@@ -18,8 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.DeleteMapping;
 
 import java.security.Principal;
-import java.sql.Timestamp;
-import java.util.Date;
+import java.time.Instant;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -45,10 +44,14 @@ public class PostController {
 		}
 	}
 	
+	protected Instant getCurrentTime() {
+		return Instant.now();
+	}
+	
 	@PostMapping
 	public PostForm add(@Valid @RequestBody AddPostForm addPostForm, Principal principal) {
 		Post post = new Post(
-						new Timestamp(new Date().getTime()),
+						getCurrentTime(),
 						addPostForm.getTitle(),
 						addPostForm.getContent()
 					);
@@ -61,6 +64,7 @@ public class PostController {
 	public PostForm edit(@Valid @RequestBody PostForm postForm, @PathVariable long id, HttpServletRequest request) throws Exception {
 		Post post = postService.getById(id);
 		assumeThatUserIsTheAuthorOrAdmin(post, request);
+		post.setDate(getCurrentTime());
 		post.setTitle(postForm.getTitle());
 		post.setContent(postForm.getContent());
 		postService.update(post);

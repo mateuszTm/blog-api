@@ -1,6 +1,7 @@
 package appbeta.blog.dto;
 
 import java.sql.Timestamp;
+import java.time.Instant;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -10,8 +11,8 @@ public class PostForm extends AddPostForm {
 
 	protected Long id;
 
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-	protected Timestamp date;
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "UTC")
+	protected Instant date;
 	
 	protected Long userId;
 	
@@ -28,7 +29,7 @@ public class PostForm extends AddPostForm {
 		userName = post.getUser().getLogin();
 	}
 	
-	public PostForm(Long id, Timestamp date, String title, String content, Long userId, String userName) {
+	public PostForm(Long id, Instant date, String title, String content, Long userId, String userName) {
 		this.id = id;
 		this.date = date;
 		this.title = title;
@@ -45,11 +46,11 @@ public class PostForm extends AddPostForm {
 		this.id = id;
 	}
 
-	public Timestamp getDate() {
+	public Instant getDate() {
 		return date;
 	}
 
-	public void setDate(Timestamp date) {
+	public void setDate(Instant date) {
 		this.date = date;
 	}
 
