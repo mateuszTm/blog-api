@@ -19,10 +19,3 @@ spring:
         max-page-size: 20
         prefix:
 #        qualifier-delimeter:
-#logging:
-#  file: error.log
-#  level:
-#    appbeta:
-#      blog:
-#        error:
-#          ApiExceptionHandler: INFO
