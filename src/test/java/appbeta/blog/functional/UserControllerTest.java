@@ -1,4 +1,4 @@
-package appbeta.blog.integration;
+package appbeta.blog.functional;
 
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;

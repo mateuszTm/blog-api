@@ -1,4 +1,4 @@
-package appbeta.blog.integration;
+package appbeta.blog.functional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
