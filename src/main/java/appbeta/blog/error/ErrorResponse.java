@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 import java.util.Date;
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.List;
 
 
@@ -15,8 +16,8 @@ public class ErrorResponse {
 	
 	private HttpStatus status;
 	
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
-	private Timestamp timestamp;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss", timezone="UTC")
+	private Instant time;
 	
 	private String message;
 
@@ -24,7 +25,7 @@ public class ErrorResponse {
 	private List<AbstractErrorResponse> errors;
 	
 	public ErrorResponse () {
-		timestamp = new Timestamp(new Date().getTime());
+		time = Instant.now();
 	}
 	
 	public ErrorResponse (HttpStatus status, String message) {
@@ -37,12 +38,6 @@ public class ErrorResponse {
 		this();
 		this.status = status;
 		this.message = exception.getMessage();
-	}
-	
-	public ErrorResponse (HttpStatus status, String message, Throwable exception) {
-		this();
-		this.status = status;
-		this.message = message;
 	}
 	
 	public List<AbstractErrorResponse> getErrors() {
@@ -61,12 +56,12 @@ public class ErrorResponse {
 		this.status = status;
 	}
 
-	public Timestamp getTimestamp() {
-		return timestamp;
+	public Instant getTime() {
+		return time;
 	}
 
-	public void setTimestamp(Timestamp timestamp) {
-		this.timestamp = timestamp;
+	public void setTime(Instant timestamp) {
+		this.time = timestamp;
 	}
 
 	public String getMessage() {

@@ -1,6 +1,5 @@
 package appbeta.blog.dto;
 
-import java.sql.Timestamp;
 import java.time.Instant;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
