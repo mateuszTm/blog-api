@@ -1,11 +1,14 @@
 USE `blog_test`;
 
+DROP TABLE IF EXISTS `user_role`;
+DROP TABLE IF EXISTS `role`;
+DROP TABLE IF EXISTS `post`;
 DROP TABLE IF EXISTS `user`;
 
 CREATE TABLE `user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `login` varchar(50) NOT NULL,
-  `password` varchar(50) NOT NULL,
+  `password` blob NOT NULL,
   `locked` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `login` (`login`)
@@ -14,8 +17,6 @@ CREATE TABLE `user` (
 INSERT INTO `user` (`id`, `login`, `password`) values 
 (1, "test_admin", "test_admin"),
 (2, "test_user", "test_user");
-
-DROP TABLE IF EXISTS `role`;
 
 CREATE TABLE `role` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -27,8 +28,6 @@ CREATE TABLE `role` (
 INSERT INTO `role` (`id`, `name`) VALUES 
 (1, "ROLE_ADMIN"),
 (2, "ROLE_USER");
-
-DROP TABLE IF EXISTS `user_role`;
 
 CREATE TABLE `user_role` (
   `user_id` int(11) NOT NULL,
@@ -42,8 +41,6 @@ CREATE TABLE `user_role` (
 INSERT INTO `user_role` (`user_id`, `role_id`) VALUES 
 (1, 1),
 (2, 2);
-
-DROP TABLE IF EXISTS `post`;
 
 CREATE TABLE `post` (
   `id` int(11) NOT NULL AUTO_INCREMENT,

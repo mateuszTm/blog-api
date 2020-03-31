@@ -1,7 +1,7 @@
 DELETE FROM blog_test.user;
 INSERT INTO blog_test.user (`id`, `login`, `password`) values 
-(1, "test_admin", "test_admin"),
-(2, "test_user", "test_user");
+(1, "test_admin", "$2a$10$j6.kO9aTgTTxpRxhZZPrKeXuam/wiuL8o5pPYc.3tRxxXeMbcDKdm"),
+(2, "test_user", "$2a$10$IMH8ECe84UsTizfXbgssyumGI9s4z4nK2IERKSZLLjCz2d2mNZ9YS");
 
 DELETE FROM blog_test.role;
 INSERT INTO blog_test.role (`id`, `name`) VALUES 

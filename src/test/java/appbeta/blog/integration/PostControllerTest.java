@@ -5,10 +5,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -21,28 +20,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
-import org.hamcrest.Matchers;
-
 @SpringBootTest
 @AutoConfigureMockMvc
 @Sql(scripts="classpath:sql/postController_functional.sql")
-public class PostControllerTest {
+@WithMockUser(roles = {"ADMIN"})
+public class PostControllerTest extends AbstractFunctionalTest {
 	
-	private String url = "/post";
-	
-	@Autowired
-	private MockMvc mockMvc;
-	
-	@Autowired 
-	private ObjectMapper objectMapper;
-	
-	private ObjectNode getJsonObj() {
-		return objectMapper.createObjectNode();
-	}
-	
+	protected String url = "/post";
+		
 	private String getPostJsonOne() {
 		return getJsonObj()
 				.put("id", 1)
@@ -55,10 +40,10 @@ public class PostControllerTest {
 	}
 
 	@Test
+	@WithMockUser(username="test_user", password="test_user", roles = {"USER"})
 	public void addUsersPost() throws Exception {
 		String postContent = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
 		String json = getJsonObj()
-//				.put("date", "2020-03-04 12:13:14")
 				.put("title", "test post title 1")
 				.put("content", postContent)
 				.put("userId", 2)

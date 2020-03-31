@@ -2,13 +2,6 @@ package appbeta.blog.integration;
 
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-
-//import static org.junit.Assert.assertTrue;
-//import static org.junit.Assert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -20,60 +13,21 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.sql.Timestamp;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.regex.Pattern;
-
-
-import org.json.JSONException;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.junit.runner.RunWith;
-import org.skyscreamer.jsonassert.JSONAssert;
-import org.skyscreamer.jsonassert.JSONCompareMode;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.security.test.context.support.WithMockUser;
+
 import com.fasterxml.jackson.databind.node.ObjectNode;
-
-import appbeta.blog.entity.Role;
-import appbeta.blog.entity.User;
-
-import com.jayway.jsonpath.JsonPath;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.hamcrest.Matchers;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @Sql(scripts="classpath:sql/userController_functional.sql")
-public class UserControllerTest {
+@WithMockUser(roles = {"ADMIN"})
+public class UserControllerTest extends AbstractFunctionalTest{
 	
-	@Autowired
-	private MockMvc mockMvc;
-
-	@Autowired
-	ObjectMapper objectMapper;
-	
-	private String url = "/user";
-	
-	private ObjectNode getJsonObj() {
-		return objectMapper.createObjectNode();
-	}
+	protected String url = "/user";
 	
 	protected ObjectNode getRoleUserJson() {
 		return objectMapper.createObjectNode()
@@ -87,21 +41,19 @@ public class UserControllerTest {
 				.put("name", "ROLE_ADMIN");
 	}
 	
-	protected ObjectNode getAdminJson() {
+	protected ObjectNode getUserAdminReturnedJson() {
 		ObjectNode json = getJsonObj()
 				.put("id", 1)
-				.put("login", "test_admin")
-				.put("password", "test_admin");
+				.put("login", "test_admin");
 		json.putArray("roles")
 			.add(getRoleAdminJson());
 		return json;
 	}
-	
-	protected ObjectNode getUserJson() {
+		
+	protected ObjectNode getUserUserReturnedJson() {
 		ObjectNode json = getJsonObj()
 				.put("id", 2)
-				.put("login", "test_user")
-				.put("password", "test_user");
+				.put("login", "test_user");
 		json.putArray("roles")
 			.add(getRoleUserJson());
 		return json;
@@ -109,13 +61,10 @@ public class UserControllerTest {
 	
 	@Test
 	public void getAllUsers() throws Exception {
-		ObjectNode jsonAdmin = getAdminJson();
-		ObjectNode jsonUser = getUserJson();
-		//		
 		ObjectNode content = getJsonObj();
 		content.putArray("content")
-			.add(getAdminJson())
-			.add(getUserJson());
+			.add(getUserAdminReturnedJson())
+			.add(getUserUserReturnedJson());
 		String jsonContent = content.toString();
 		
 		mockMvc.perform(
@@ -132,7 +81,6 @@ public class UserControllerTest {
 	
 	@Test
 	public void FailToGetUnexistingUser() throws Exception {
-		//given
 		Long fakeId = 99999999L;
 		String errorJson = getJsonObj()
 				.put("status", "NOT_FOUND")
@@ -145,7 +93,7 @@ public class UserControllerTest {
 			.andExpect(status().isNotFound())
 			.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 			.andExpect(content().json(errorJson, false))
-			.andExpect(jsonPath("$.timestamp").isString());
+			.andExpect(jsonPath("$.time").isString());
 	}
 	
 	@Test
@@ -172,43 +120,48 @@ public class UserControllerTest {
 			.andDo(print())
 			.andExpect(status().isBadRequest())
 			.andExpect(content().json(jsonError, false))
-			.andExpect(jsonPath("$.timestamp").isString());
+			.andExpect(jsonPath("$.time").isString());
 	}
 	
 	@Test
-	public void AddUserWithRoleUser() throws Exception {		
+	public void AddUserWithRoleUser() throws Exception {
 		ObjectNode user = getJsonObj()
-				.put("login", "AddUserWithRole_login")
-				.put("password", "AddUserWithRole_password");
-		user.putArray("roles").add(getRoleUserJson());
-		String jsonUser = user.toString();
+				.put("login", "AddUserWithRole_login");
+		user.putArray("roles")
+				.add(getRoleUserJson());
+		String jsonUserOut = user.toString();
+		
+		user.put("password", "AddUserWithRole_password");
+		String jsonUserInput = user.toString();
 		
 		mockMvc.perform(
 				post(url)
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(jsonUser))
+				.content(jsonUserInput))
 			.andDo(print())
 			.andExpect(status().isOk())
-			.andExpect(content().json(jsonUser, false))
+			.andExpect(content().json(jsonUserOut, false))
 			.andExpect(jsonPath("$.id").isNumber());
 	}
 	
 	@Test
 	public void updateUser() throws Exception {		
-		ObjectNode user = getUserJson()
-				.put("login", "test_user-EDITED")
-				.put("password", "test_user-EDITED");
+		ObjectNode user = getUserUserReturnedJson()
+				.put("login", "test_user-EDITED");
 		int id = user.get("id").asInt();
-		String jsonUser = user.toString();
+		String returnedJson = user.toString();
+		
+		user.put("password", "test_user-EDITED");
+		String consumedJson = user.toString();
 		
 		mockMvc.perform(
 				put(url + "/" + id)
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(jsonUser))
+				.content(consumedJson))
 			.andDo(print())
 			.andExpect(status().isOk())
 			.andExpect(content().contentType(MediaType.APPLICATION_JSON))
-			.andExpect(content().json(jsonUser, false));
+			.andExpect(content().json(returnedJson, false));
 	}
 	
 	@Test

@@ -2,14 +2,12 @@ package appbeta.blog.integration;
 
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 
-import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
@@ -27,25 +25,10 @@ import org.springframework.test.context.jdbc.Sql;
 @SpringBootTest
 @AutoConfigureMockMvc
 @Sql(scripts="classpath:sql/roleController_functional.sql")
-public class RoleControllerTest {
-	
-	@Autowired
-	private MockMvc mockMvc;
-	
-	@Autowired 
-	private ObjectMapper objectMapper;
-	
-	private String url = "/role";
-	
-	private ObjectNode getJsonObj() {
-		return objectMapper.createObjectNode();
-	}
-	
-	private ObjectNode getRoleUserJson() {
-		return getJsonObj()
-				.put("id", 2)
-				.put("name", "ROLE_USER");
-	}
+@WithMockUser(roles = {"ADMIN"})
+public class RoleControllerTest extends AbstractFunctionalTest {
+		
+	protected String url = "/role";
 	
 	private ObjectNode getRoleAdminJson() {
 		return getJsonObj()
