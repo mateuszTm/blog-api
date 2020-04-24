@@ -19,3 +19,7 @@ spring:
         max-page-size: 20
         prefix:
 #        qualifier-delimeter:
+server:
+  port: 8080
+  servlet:
+    context-path: /backend

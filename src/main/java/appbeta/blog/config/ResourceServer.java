@@ -7,6 +7,7 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler;
+import org.springframework.web.cors.CorsConfiguration;
 
 @Configuration
 @EnableResourceServer
@@ -19,13 +20,14 @@ public class ResourceServer extends ResourceServerConfigurerAdapter {
 	
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
-        http.anonymous().disable()
-	    	.authorizeRequests()
-	        .antMatchers(HttpMethod.POST, "/user").permitAll()
-	        .antMatchers(HttpMethod.GET, "/post", "/user/info").permitAll()
-	        .antMatchers("/post", "/post/**").hasAnyRole(Role.ADMIN.toString(), Role.USER.toString())
-		    .antMatchers("/user", "/user/**", "/role", "/role/**").hasRole(Role.ADMIN.toString())
-		    .anyRequest().authenticated()
-        .and().exceptionHandling().accessDeniedHandler(new OAuth2AccessDeniedHandler());
+        http.authorizeRequests()
+	        	.antMatchers("/post").permitAll()
+		        .antMatchers(HttpMethod.POST, "/user").permitAll()
+		        .antMatchers(HttpMethod.GET, "/post", "/user/info").permitAll()
+		        .antMatchers("/post", "/post/**").hasAnyRole(Role.ADMIN.toString(), Role.USER.toString())
+			    .antMatchers("/user", "/user/**", "/role", "/role/**").hasRole(Role.ADMIN.toString())
+			    .anyRequest().authenticated().and()
+			.exceptionHandling()
+				.accessDeniedHandler(new OAuth2AccessDeniedHandler());
 	}
 }
