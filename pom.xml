@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>appbeta</groupId>
-	<artifactId>blog</artifactId>
+	<artifactId>blog-resource-server</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>blog</name>
 	<description>Demo project for Spring Boot</description>
@@ -36,16 +36,21 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
 			<groupId>org.springframework.security.oauth</groupId>
 			<artifactId>spring-security-oauth2</artifactId>
 			<version>2.4.0.RELEASE</version>
+		</dependency> -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 		  	<artifactId>spring-security-jwt</artifactId>
 			<version>1.1.0.RELEASE</version>
 		</dependency>
+		
 		
 		<dependency>
 		    <groupId>io.rest-assured</groupId>
