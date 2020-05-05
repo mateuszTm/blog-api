@@ -30,3 +30,5 @@ server:
   port: 8082
   servlet:
     context-path: /resourceserver
+blog:
+  allowed-origins: http://localhost:4200
