@@ -19,10 +19,16 @@ spring:
         max-page-size: 20
         prefix:
 #        qualifier-delimeter:
-#logging:
-#  file: error.log
-#  level:
-#    appbeta:
-#      blog:
-#        error:
-#          ApiExceptionHandler: INFO
+  application:
+    name: blog-api
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:8081/authserver/jwk/keyset
+server:
+  port: 8082
+  servlet:
+    context-path: /resourceserver
+blog:
+  allowed-origins: http://localhost:4200
