@@ -22,6 +22,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 //import org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler;
 //import org.springframework.security.oauth2.provider.token.TokenStore;
 //import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
@@ -44,10 +46,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 	protected void configure(HttpSecurity http) throws Exception {
 		http.cors().and()
 			.authorizeRequests()
-				.antMatchers("/post").permitAll()
+				.antMatchers(HttpMethod.GET, "/post/**").permitAll()
+				.antMatchers("/user").hasAnyRole("ADMIN", "USER")
+				.antMatchers("/user/**", "/role/**").hasRole("ADMIN")
 				.anyRequest().authenticated().and()
 			.oauth2ResourceServer()
-				.jwt();
+				.jwt().jwtAuthenticationConverter(getJwtAuthenticationConverter());
+	}
+	
+	private JwtAuthenticationConverter getJwtAuthenticationConverter() {
+		JwtAuthenticationConverter jwtConv = new JwtAuthenticationConverter();
+		JwtGrantedAuthoritiesConverter authConv = new JwtGrantedAuthoritiesConverter();
+		authConv.setAuthoritiesClaimName("authorities");
+		authConv.setAuthorityPrefix("ROLE_");
+		jwtConv.setJwtGrantedAuthoritiesConverter(authConv);
+		return jwtConv;
 	}
 	
 }

@@ -44,12 +44,12 @@ public class UserController {
 		return userService.findUserById(id);
 	}
 	
-	@GetMapping("/info")
+	@GetMapping()
 	public User getSelf(Principal principal) {
 		return userService.findUserByLogin(principal.getName());
 	}
 	
-	@GetMapping()
+	@GetMapping("/list")
 	public Page <User> getPage(Pageable pageable) {
 		return userService.getAllUsers(pageable);
 	}
@@ -75,7 +75,7 @@ public class UserController {
 	}
 	
 	@PutMapping
-	public User editSelf(@Valid @RequestBody EditUserForm userForm, @PathVariable long id, Principal principal) {
+	public User editSelf(@Valid @RequestBody EditUserForm userForm, Principal principal) {
 		User user = userService.findUserByLogin(principal.getName());
 		user.setLogin(userForm.getLogin());
 		user.setPassword(userForm.getPassword());

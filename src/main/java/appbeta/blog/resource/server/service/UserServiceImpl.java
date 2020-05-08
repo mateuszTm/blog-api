@@ -54,13 +54,12 @@ public class UserServiceImpl implements UserService {
 	@Override
 	@Transactional
 	public void updateUser(User user) {
-		User userBefore = userRepository
-				.findById(user.getId())
-				.orElseThrow(() -> getUserNotFoundException(user));
-		if (user.getPassword() != null && userBefore.getPassword() != user.getPassword()) {
+		if (userRepository.existsById(user.getId())) {
 			user.setPassword(passwordEncoder.encode(user.getPassword()));
+			userRepository.save(user);
+		} else {
+			throw new EntityNotFoundException("Role " + user + " has not been found");
 		}
-		userRepository.save(user);
 	}
 
 	@Override
