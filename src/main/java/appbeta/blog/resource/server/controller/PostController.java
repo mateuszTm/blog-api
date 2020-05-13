@@ -10,6 +10,7 @@ import appbeta.blog.resource.server.service.PostService;
 import appbeta.blog.resource.server.service.UserService;
 
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -84,8 +85,14 @@ public class PostController {
 	}
 
 	@GetMapping
-	public Page<PostForm> getPage(Pageable pageable) {
-		return postService.getAll(pageable)
-					.map(post -> new PostForm((Post)post));
+	public Page<PostForm> getPage(Pageable pageable, @RequestParam(name="user", required=false) Long userId) {
+		Page<Post> posts;
+		if (userId != null) {
+			posts = postService.getByUser(pageable, userService.findUserById(userId));
+		} else {
+			posts = postService.getAll(pageable);
+		}
+		Page<PostForm> postsForms = posts.map((Post post) -> new PostForm(post));
+		return postsForms;
 	}
 }

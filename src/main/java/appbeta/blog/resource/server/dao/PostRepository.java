@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import appbeta.blog.resource.server.entity.Post;
+import appbeta.blog.resource.server.entity.User;
 
 public interface PostRepository extends JpaRepository <Post, Long> {
 	
@@ -24,4 +25,6 @@ public interface PostRepository extends JpaRepository <Post, Long> {
 	@Modifying
 	@Query("UPDATE Post p SET p.date=:date, p.title=:title, p.content=:content WHERE p.id=:id")
 	public Integer updatePostFields(Long id, Timestamp date, String title, String content);
+	
+	public Page<Post> findByUser (Pageable pageable, User user);
 }

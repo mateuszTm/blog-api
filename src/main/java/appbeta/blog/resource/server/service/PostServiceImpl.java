@@ -8,6 +8,7 @@ import javax.persistence.EntityNotFoundException;
 
 import appbeta.blog.resource.server.dao.PostRepository;
 import appbeta.blog.resource.server.entity.Post;
+import appbeta.blog.resource.server.entity.User;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -83,5 +84,9 @@ public class PostServiceImpl implements PostService {
 	@Transactional
 	public Post getById(Long id) {
 		return postRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Post id " + id + " has not been found"));
+	}
+	
+	public Page<Post> getByUser(Pageable pageable, User user) {
+		return postRepository.findByUser(pageable, user);
 	}
 }

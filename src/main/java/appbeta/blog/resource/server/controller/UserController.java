@@ -4,8 +4,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import appbeta.blog.resource.server.dto.EditUserForm;
+import appbeta.blog.resource.server.dto.PostForm;
+import appbeta.blog.resource.server.entity.Post;
 import appbeta.blog.resource.server.entity.Role;
 import appbeta.blog.resource.server.entity.User;
+import appbeta.blog.resource.server.service.PostService;
 import appbeta.blog.resource.server.service.UserService;
 
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,7 +40,10 @@ import java.security.Principal;
 public class UserController {
 	
 	@Autowired
-	private UserService userService;	
+	private UserService userService;
+	
+	@Autowired
+	private PostService postService;
 	
 	@GetMapping("/{id}")
 	public User get(@PathVariable Long id) {
@@ -92,5 +98,13 @@ public class UserController {
 	public void deleteSelf(Principal principal) {
 		User user = userService.findUserByLogin(principal.getName());
 		userService.remove(user);
+	}
+	
+	@GetMapping("/post")
+	public Page<PostForm> getUserPosts(Pageable pageable, Principal principal){
+		return postService.getByUser(
+				pageable,
+				userService.findUserByLogin(principal.getName())
+			).map((Post post) -> new PostForm(post));
 	}
 }
