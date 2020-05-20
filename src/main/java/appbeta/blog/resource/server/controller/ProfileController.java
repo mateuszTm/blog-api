@@ -6,7 +6,6 @@ import org.springframework.web.server.ResponseStatusException;
 import appbeta.blog.resource.server.dto.EditProfileForm;
 import appbeta.blog.resource.server.dto.PostForm;
 import appbeta.blog.resource.server.entity.Post;
-import appbeta.blog.resource.server.entity.Role;
 import appbeta.blog.resource.server.entity.Profile;
 import appbeta.blog.resource.server.service.PostService;
 import appbeta.blog.resource.server.service.ProfileService;
@@ -62,12 +61,6 @@ public class ProfileController {
 	
 	@PostMapping()
 	public Profile add(@Valid @RequestBody Profile profile, HttpServletRequest request) throws Exception {
-//		String requiredRole = appbeta.blog.resource.server.config.Role.ADMIN.authority;
-//		for(Role r: user.getRoles()) {
-//			if (r.getName().equals(requiredRole) && !request.isUserInRole(requiredRole)) {
-//				throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not authorized to add user with role " + r.getName());
-//			}
-//		}		
 		profileService.add(profile);
 		return profile;
 	}
