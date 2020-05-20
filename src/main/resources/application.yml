@@ -8,6 +8,8 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL5Dialect
+    hibernate:
+      ddl-auto: none
   data:
     web:
       pageable:

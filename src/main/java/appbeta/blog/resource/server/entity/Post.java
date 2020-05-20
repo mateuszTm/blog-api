@@ -35,8 +35,8 @@ public class Post {
 	
 	@NotNull
 	@ManyToOne(fetch=FetchType.EAGER)
-	@JoinColumn(name="user_id")
-	private User user;
+	@JoinColumn(name="profile_id")
+	private Profile profile;
 
 	public Post() {}
 
@@ -78,11 +78,11 @@ public class Post {
 		this.content = content;
 	}
 	
-	public User getUser() {
-		return user;
+	public Profile getProfile() {
+		return profile;
 	}
 
-	public void setUser(User user) {
-		this.user = user;
+	public void setProfile(Profile user) {
+		this.profile = user;
 	}
 }

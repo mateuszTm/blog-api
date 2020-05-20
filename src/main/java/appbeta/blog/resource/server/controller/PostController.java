@@ -7,7 +7,7 @@ import appbeta.blog.resource.server.dto.AddPostForm;
 import appbeta.blog.resource.server.dto.PostForm;
 import appbeta.blog.resource.server.entity.Post;
 import appbeta.blog.resource.server.service.PostService;
-import appbeta.blog.resource.server.service.UserService;
+import appbeta.blog.resource.server.service.ProfileService;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -37,10 +37,10 @@ public class PostController {
 	private PostService postService;
 	
 	@Autowired
-	private UserService userService;
+	private ProfileService userService;
 	
 	protected void assumeThatUserIsTheAuthorOrAdmin(Post post, HttpServletRequest request) throws Exception {
-		if (!(post.getUser().getLogin().equals(request.getUserPrincipal().getName())) && !request.isUserInRole("ROLE_ADMIN")) {
+		if (!(post.getProfile().getLogin().equals(request.getUserPrincipal().getName())) && !request.isUserInRole("ROLE_ADMIN")) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not the author of this post");
 		}
 	}
@@ -56,7 +56,7 @@ public class PostController {
 						addPostForm.getTitle(),
 						addPostForm.getContent()
 					);
-		post.setUser(userService.findUserByLogin(principal.getName()));
+		post.setProfile(userService.findProfileByLogin(principal.getName()));
 		postService.add(post);
 		return new PostForm(post);
 	}
@@ -88,7 +88,7 @@ public class PostController {
 	public Page<PostForm> getPage(Pageable pageable, @RequestParam(name="user", required=false) Long userId) {
 		Page<Post> posts;
 		if (userId != null) {
-			posts = postService.getByUser(pageable, userService.findUserById(userId));
+			posts = postService.getByProfile(pageable, userService.findProfileById(userId));
 		} else {
 			posts = postService.getAll(pageable);
 		}

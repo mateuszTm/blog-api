@@ -6,7 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import appbeta.blog.resource.server.entity.Post;
-import appbeta.blog.resource.server.entity.User;
+import appbeta.blog.resource.server.entity.Profile;
 
 public interface PostService {
 	
@@ -28,5 +28,5 @@ public interface PostService {
 	
 	public Post getById (Long id);
 	
-	public Page<Post> getByUser(Pageable pageable, User user);
+	public Page<Post> getByProfile(Pageable pageable, Profile user);
 }

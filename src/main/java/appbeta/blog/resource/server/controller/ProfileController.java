@@ -3,13 +3,13 @@ package appbeta.blog.resource.server.controller;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import appbeta.blog.resource.server.dto.EditUserForm;
+import appbeta.blog.resource.server.dto.EditProfileForm;
 import appbeta.blog.resource.server.dto.PostForm;
 import appbeta.blog.resource.server.entity.Post;
 import appbeta.blog.resource.server.entity.Role;
-import appbeta.blog.resource.server.entity.User;
+import appbeta.blog.resource.server.entity.Profile;
 import appbeta.blog.resource.server.service.PostService;
-import appbeta.blog.resource.server.service.UserService;
+import appbeta.blog.resource.server.service.ProfileService;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,75 +36,74 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import java.security.Principal;
 
 @RestController
-@RequestMapping("/user")
-public class UserController {
+@RequestMapping("/profile")
+public class ProfileController {
 	
 	@Autowired
-	private UserService userService;
+	private ProfileService profileService;
 	
 	@Autowired
 	private PostService postService;
 	
 	@GetMapping("/{id}")
-	public User get(@PathVariable Long id) {
-		return userService.findUserById(id);
+	public Profile get(@PathVariable Long id) {
+		return profileService.findProfileById(id);
 	}
 	
 	@GetMapping()
-	public User getSelf(Principal principal) {
-		return userService.findUserByLogin(principal.getName());
+	public Profile getSelf(Principal principal) {
+		return profileService.findProfileByLogin(principal.getName());
 	}
 	
 	@GetMapping("/list")
-	public Page <User> getPage(Pageable pageable) {
-		return userService.getAllUsers(pageable);
+	public Page <Profile> getPage(Pageable pageable) {
+		return profileService.getAllProfiles(pageable);
 	}
 	
 	@PostMapping()
-	public User add(@Valid @RequestBody User user, HttpServletRequest request) throws Exception {
-		String requiredRole = appbeta.blog.resource.server.config.Role.ADMIN.authority;
-		for(Role r: user.getRoles()) {
-			if (r.getName().equals(requiredRole) && !request.isUserInRole(requiredRole)) {
-				throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not authorized to add user with role " + r.getName());
-			}
-		}		
-		userService.add(user);
-		return user;
+	public Profile add(@Valid @RequestBody Profile profile, HttpServletRequest request) throws Exception {
+//		String requiredRole = appbeta.blog.resource.server.config.Role.ADMIN.authority;
+//		for(Role r: user.getRoles()) {
+//			if (r.getName().equals(requiredRole) && !request.isUserInRole(requiredRole)) {
+//				throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not authorized to add user with role " + r.getName());
+//			}
+//		}		
+		profileService.add(profile);
+		return profile;
 	}
 	
 	
 	@PutMapping("/{id}")
-	public User edit(@Valid @RequestBody User user, @PathVariable long id) {
-		user.setId(id);
-		userService.updateUser(user);
-		return user;
+	public Profile edit(@Valid @RequestBody Profile profile, @PathVariable long id) {
+		profile.setId(id);
+		profileService.updateProfile(profile);
+		return profile;
 	}
 	
 	@PutMapping
-	public User editSelf(@Valid @RequestBody EditUserForm userForm, Principal principal) {
-		User user = userService.findUserByLogin(principal.getName());
-		user.setLogin(userForm.getLogin());
-		user.setPassword(userForm.getPassword());
-		userService.updateUser(user);
-		return user;
+	public Profile editSelf(@Valid @RequestBody EditProfileForm editProfileForm, Principal principal) {
+		Profile profile = profileService.findProfileByLogin(principal.getName());
+		profile.setDescription(editProfileForm.getdescription());
+		profileService.updateProfile(profile);
+		return profile;
 	}
 	
 	@DeleteMapping("/{id}")
 	public void delete(@PathVariable Long id) {
-		userService.removeById(id);
+		profileService.removeById(id);
 	}
 	
 	@DeleteMapping
 	public void deleteSelf(Principal principal) {
-		User user = userService.findUserByLogin(principal.getName());
-		userService.remove(user);
+		Profile profile = profileService.findProfileByLogin(principal.getName());
+		profileService.remove(profile);
 	}
 	
 	@GetMapping("/post")
 	public Page<PostForm> getUserPosts(Pageable pageable, Principal principal){
-		return postService.getByUser(
+		return postService.getByProfile(
 				pageable,
-				userService.findUserByLogin(principal.getName())
+				profileService.findProfileByLogin(principal.getName())
 			).map((Post post) -> new PostForm(post));
 	}
 }

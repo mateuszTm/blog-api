@@ -7,8 +7,8 @@ import java.util.stream.Collectors;
 
 import javax.persistence.EntityNotFoundException;
 
-import appbeta.blog.resource.server.dao.UserRepository;
-import appbeta.blog.resource.server.entity.User;
+import appbeta.blog.resource.server.dao.ProfileRepository;
+import appbeta.blog.resource.server.entity.Profile;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -24,10 +24,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Service
-public class UserServiceImpl implements UserService {
+public class ProfileServiceImpl implements ProfileService {
 	
 	@Autowired
-	private UserRepository userRepository;
+	private ProfileRepository userRepository;
 	
 	@Autowired 
 	private PostService postService;
@@ -35,27 +35,25 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 	
-	private EntityNotFoundException getUserNotFoundException(Long id) {
+	private EntityNotFoundException getProfileNotFoundException(Long id) {
 		return new EntityNotFoundException("User id " + id + " has not been found");
 	}
 	
-	private EntityNotFoundException getUserNotFoundException(User user ) {
-		return getUserNotFoundException(user.getId());
+	private EntityNotFoundException getUserNotFoundException(Profile user ) {
+		return getProfileNotFoundException(user.getId());
 	}
 
 	@Override
 	@Transactional
-	public void add(User user) {
+	public void add(Profile user) {
 		user.setId(null);
-		user.setPassword(passwordEncoder.encode(user.getPassword()));
 		userRepository.save(user);
 	}
 	
 	@Override
 	@Transactional
-	public void updateUser(User user) {
+	public void updateProfile(Profile user) {
 		if (userRepository.existsById(user.getId())) {
-			user.setPassword(passwordEncoder.encode(user.getPassword()));
 			userRepository.save(user);
 		} else {
 			throw new EntityNotFoundException("Role " + user + " has not been found");
@@ -64,7 +62,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	@Transactional
-	public void remove(User user) {
+	public void remove(Profile user) {
 		postService.removeByUserId(user.getId());
 		userRepository.delete(user);
 	}
@@ -78,20 +76,20 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	@Transactional
-	public Page<User> getAllUsers(Pageable pageable) {
+	public Page<Profile> getAllProfiles(Pageable pageable) {
 		return userRepository.findAll(pageable);
 	}
 
 	@Override
 	@Transactional
-	public User findUserByLogin(String login) {
-		return userRepository.findByLogin(login).orElseThrow(() -> (new EntityNotFoundException("User with login '" + login + "' has not been found")));
+	public Profile findProfileByLogin(String login) {
+		return userRepository.findByLogin(login).orElseThrow(() -> (new EntityNotFoundException("Profile with login '" + login + "' has not been found")));
 	}
 	
 	@Override
 	@Transactional
-	public User findUserById(Long id){
-		return userRepository.findById(id).orElseThrow(() -> getUserNotFoundException(id));
+	public Profile findProfileById(Long id){
+		return userRepository.findById(id).orElseThrow(() -> getProfileNotFoundException(id));
 	}
 
 }

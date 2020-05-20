@@ -24,8 +24,8 @@ public class PostForm extends AddPostForm {
 		date = post.getDate();
 		title = post.getTitle();
 		content = post.getContent();
-		userId = post.getUser().getId();
-		userName = post.getUser().getLogin();
+		userId = post.getProfile().getId();
+		userName = post.getProfile().getLogin();
 	}
 	
 	public PostForm(Long id, Instant date, String title, String content, Long userId, String userName) {

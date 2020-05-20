@@ -4,6 +4,7 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -21,43 +22,40 @@ import javax.persistence.FetchType;
 import javax.persistence.Lob;
 
 @Entity
-@Table(name="user")
-public class User {
+@Table(name="profile")
+public class Profile {
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 	
 	@NotBlank
+	@NotNull
 	private String login;
 	
-	@NotBlank
 	@Lob
-	private String password;
+	private String description;
+	
+	private boolean active;
 	
 	@JsonIgnore
-	private boolean locked;
-	
-	@JsonIgnore
-	@OneToMany(mappedBy="user", fetch=FetchType.LAZY)
+	@OneToMany(mappedBy="profile", fetch=FetchType.LAZY)
 	private List<Post> posts;
 	
-	// TODO przemyśleć czy powinno być fetchType.EAGER?
-	@NotEmpty
-	@ManyToMany(fetch=FetchType.EAGER)
-	@JoinTable(
-			name="user_role",
-			joinColumns=@JoinColumn(name="user_id"),
-			inverseJoinColumns=@JoinColumn(name="role_id")
-			)
-	private Set<Role> roles;
-
-	public User() {}
+	public Profile() {}
 	
-	public User(String login, String password, boolean locked) {
+	public Profile(String login, String description, boolean active) {
 		this.login = login;
-		this.password = password;
-		this.locked = locked;
+		this.description = description;
+		this.active = active;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	public Long getId() {
@@ -76,33 +74,14 @@ public class User {
 		this.login = login;
 	}
 
-	@JsonIgnore
-	public String getPassword() {
-		return password;
+	public boolean isActive() {
+		return active;
 	}
 
-	@JsonProperty
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-	public boolean isLocked() {
-		return locked;
-	}
-
-	public void setLocked(boolean locked) {
-		this.locked = locked;
+	public void setActive(boolean locked) {
+		this.active = locked;
 	}
 	
-	
-	public Set<Role> getRoles() {
-		return roles;
-	}
-
-	public void setRoles(Set<Role> roles) {
-		this.roles = roles;
-	}
-
 	public List<Post> getPosts() {
 		return posts;
 	}
@@ -111,9 +90,9 @@ public class User {
 		this.posts = posts;
 	}
 	
-	public User addPost(Post post) {
+	public Profile addPost(Post post) {
 		this.posts.add(post);
-		post.setUser(this);
+		post.setProfile(this);
 		return this;
 	}	
 }
