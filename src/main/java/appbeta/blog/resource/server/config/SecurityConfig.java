@@ -37,6 +37,9 @@ import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter{
+
+	@Value("${blog.allowed-origins}")
+	private String[] allowedOrigins;
 	
 	@Bean
 	public PasswordEncoder passwordEncoder() {
@@ -67,4 +70,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 		return jwtConv;
 	}
 	
+	@Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList(allowedOrigins));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
 }
