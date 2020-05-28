@@ -67,16 +67,19 @@ public class ProfileController {
 	
 	
 	@PutMapping("/{id}")
-	public Profile edit(@Valid @RequestBody Profile profile, @PathVariable long id) {
-		profile.setId(id);
+	public Profile edit(@Valid @RequestBody EditProfileForm profileForm, @PathVariable long id) {
+		Profile profile = profileService.findProfileById(id);
+		profile.setDescription(profileForm.getDescription());
+		profile.setActive(profileForm.getActive());
 		profileService.updateProfile(profile);
 		return profile;
 	}
 	
 	@PutMapping
-	public Profile editSelf(@Valid @RequestBody EditProfileForm editProfileForm, Principal principal) {
+	public Profile editSelf(@Valid @RequestBody EditProfileForm profileForm, Principal principal) {
 		Profile profile = profileService.findProfileByLogin(principal.getName());
-		profile.setDescription(editProfileForm.getdescription());
+		profile.setDescription(profileForm.getDescription());
+		profile.setActive(profileForm.getActive());
 		profileService.updateProfile(profile);
 		return profile;
 	}

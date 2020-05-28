@@ -1,6 +1,7 @@
 package appbeta.blog.resource.server.config;
 
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -45,8 +46,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.cors().and()
+			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 			.authorizeRequests()
+				.antMatchers("/error").permitAll()
 				.antMatchers(HttpMethod.GET, "/post/**").permitAll()
+				.antMatchers(HttpMethod.POST, "/profile").hasRole(Role.ADMIN.toString())
 				.antMatchers("/profile", "/profile/post").hasAnyRole(Role.ADMIN.toString(), Role.USER.toString())
 				.antMatchers("/profile/**").hasRole(Role.ADMIN.toString())
 				.anyRequest().authenticated().and()

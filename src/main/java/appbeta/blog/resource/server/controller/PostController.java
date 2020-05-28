@@ -41,7 +41,7 @@ public class PostController {
 	
 	protected void assumeThatUserIsTheAuthorOrAdmin(Post post, HttpServletRequest request) throws Exception {
 		if (!(post.getProfile().getLogin().equals(request.getUserPrincipal().getName())) && !request.isUserInRole("ROLE_ADMIN")) {
-			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not the author of this post");
+			throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not the author of this post");
 		}
 	}
 	
