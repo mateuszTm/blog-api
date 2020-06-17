@@ -54,7 +54,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 				.antMatchers("/error").permitAll()
 				.antMatchers(HttpMethod.GET, "/post/**").permitAll()
 				.antMatchers(HttpMethod.POST, "/profile").hasRole(Role.ADMIN.toString())
-				.antMatchers("/profile", "/profile/post").hasAnyRole(Role.ADMIN.toString(), Role.USER.toString())
+				.mvcMatchers("/profile", "/profile/post").hasAnyRole(Role.ADMIN.toString(), Role.USER.toString())
 				.antMatchers("/profile/**").hasRole(Role.ADMIN.toString())
 				.anyRequest().authenticated().and()
 			.oauth2ResourceServer()
