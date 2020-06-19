@@ -25,16 +25,11 @@
 		</layout>
 	</appender>
 	
-	<root level="DEBUG">
+	<root level="INFO">
 		<appender-ref ref="console"/>
 	</root>
 	
-	<!-- <logger name="appbeta.blog.BlogApplication" level="INFO">
-		<appender-ref ref="console"/>
-	</logger> -->
-	
 	<logger name="appbeta.blog" level="ERROR">
-		<appender-ref ref="console"/>
 		<appender-ref ref="file"/>
 	</logger>
 	
