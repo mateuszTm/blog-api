@@ -24,7 +24,6 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-#          jwk-set-uri: http://localhost:8081/authserver/jwk/keyset
           issuer-uri: http://localhost:8081/auth/realms/Blog
 server:
   port: 8082
