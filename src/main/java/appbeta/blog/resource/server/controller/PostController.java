@@ -56,7 +56,7 @@ public class PostController {
 						addPostForm.getTitle(),
 						addPostForm.getContent()
 					);
-		post.setProfile(userService.findProfileByLogin(principal.getName()));
+		post.setProfile(userService.getByLogin(principal.getName()));
 		postService.add(post);
 		return new PostForm(post);
 	}
@@ -88,7 +88,7 @@ public class PostController {
 	public Page<PostForm> getPage(Pageable pageable, @RequestParam(name="user", required=false) Long userId) {
 		Page<Post> posts;
 		if (userId != null) {
-			posts = postService.getByProfile(pageable, userService.findProfileById(userId));
+			posts = postService.getByProfile(pageable, userService.getById(userId));
 		} else {
 			posts = postService.getAll(pageable);
 		}

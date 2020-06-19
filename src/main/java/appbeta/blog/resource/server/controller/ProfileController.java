@@ -46,17 +46,17 @@ public class ProfileController {
 	
 	@GetMapping("/{id}")
 	public Profile get(@PathVariable Long id) {
-		return profileService.findProfileById(id);
+		return profileService.getById(id);
 	}
 	
 	@GetMapping()
 	public Profile getSelf(Principal principal) {
-		return profileService.findProfileByLogin(principal.getName());
+		return profileService.getByLogin(principal.getName());
 	}
 	
 	@GetMapping("/list")
 	public Page <Profile> getPage(Pageable pageable) {
-		return profileService.getAllProfiles(pageable);
+		return profileService.getAll(pageable);
 	}
 	
 	@PostMapping()
@@ -68,7 +68,7 @@ public class ProfileController {
 	
 	@PutMapping("/{id}")
 	public Profile edit(@Valid @RequestBody EditProfileForm profileForm, @PathVariable long id) {
-		Profile profile = profileService.findProfileById(id);
+		Profile profile = profileService.getById(id);
 		profile.setDescription(profileForm.getDescription());
 		profile.setActive(profileForm.getActive());
 		profileService.updateProfile(profile);
@@ -77,7 +77,7 @@ public class ProfileController {
 	
 	@PutMapping
 	public Profile editSelf(@Valid @RequestBody EditProfileForm profileForm, Principal principal) {
-		Profile profile = profileService.findProfileByLogin(principal.getName());
+		Profile profile = profileService.getByLogin(principal.getName());
 		profile.setDescription(profileForm.getDescription());
 		profile.setActive(profileForm.getActive());
 		profileService.updateProfile(profile);
@@ -91,7 +91,7 @@ public class ProfileController {
 	
 	@DeleteMapping
 	public void deleteSelf(Principal principal) {
-		Profile profile = profileService.findProfileByLogin(principal.getName());
+		Profile profile = profileService.getByLogin(principal.getName());
 		profileService.remove(profile);
 	}
 	
@@ -99,7 +99,7 @@ public class ProfileController {
 	public Page<PostForm> getUserPosts(Pageable pageable, Principal principal){
 		return postService.getByProfile(
 				pageable,
-				profileService.findProfileByLogin(principal.getName())
+				profileService.getByLogin(principal.getName())
 			).map((Post post) -> new PostForm(post));
 	}
 }

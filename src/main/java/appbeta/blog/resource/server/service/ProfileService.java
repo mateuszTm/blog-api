@@ -16,9 +16,9 @@ public interface ProfileService {
 	
 	public void removeById (Long id);
 	
-	public Page <Profile> getAllProfiles (Pageable pageable);
+	public Page <Profile> getAll (Pageable pageable);
 	
-	public Profile findProfileByLogin (String  login);
+	public Profile getByLogin (String  login);
 	
-	public Profile findProfileById (Long id);
+	public Profile getById (Long id);
 }

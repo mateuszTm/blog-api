@@ -76,19 +76,19 @@ public class ProfileServiceImpl implements ProfileService {
 
 	@Override
 	@Transactional
-	public Page<Profile> getAllProfiles(Pageable pageable) {
+	public Page<Profile> getAll(Pageable pageable) {
 		return userRepository.findAll(pageable);
 	}
 
 	@Override
 	@Transactional
-	public Profile findProfileByLogin(String login) {
+	public Profile getByLogin(String login) {
 		return userRepository.findByLogin(login).orElseThrow(() -> (new EntityNotFoundException("Profile with login '" + login + "' has not been found")));
 	}
 	
 	@Override
 	@Transactional
-	public Profile findProfileById(Long id){
+	public Profile getById(Long id){
 		return userRepository.findById(id).orElseThrow(() -> getProfileNotFoundException(id));
 	}
 
