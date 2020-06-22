@@ -2,15 +2,12 @@ package appbeta.blog.resource.server.dto;
 
 import java.time.Instant;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 import appbeta.blog.resource.server.entity.Post;
 
 public class PostForm extends AddPostForm {
 
 	protected Long id;
 
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "UTC")
 	protected Instant date;
 	
 	protected Long userId;

@@ -20,6 +20,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.anonymous;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @Sql(scripts="classpath:sql/test_data.sql")
@@ -60,7 +63,7 @@ public class ProfileTest extends AbstractFunctional {
 	}
 	
 	@Test
-	public void failToAddProfileAsUser() throws Exception {
+	public void addProfileAsUser() throws Exception {
 		String json = getJsonObj()
 				.put("login", "test")
 				.put("description", "test desc")
@@ -72,7 +75,7 @@ public class ProfileTest extends AbstractFunctional {
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(json))
 			.andDo(print())
-			.andExpect(status().isForbidden());
+			.andExpect(status().isOk());
 	}
 	
 	@Test 

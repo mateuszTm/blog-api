@@ -1,18 +1,13 @@
 USE `blog_test`;
 
-
-DELETE FROM `oauth_client_details`;
-INSERT INTO `oauth_client_details` VALUES 
-('client-id',NULL,'$2a$10$GEqNDMckLYgJxZfRRmP/n.aZUF0u3a.gHPTgCOT.bWTqLRj/PR2qy','read,write','password,authorization_code,refresh_token,implicit','http://localhost:4200/login,http://localhost:4200/',NULL,36000,36000,NULL,'read,write');
-
+DELETE FROM `post`;
 
 DELETE FROM `profile`;
+
 INSERT INTO `profile` VALUES 
 (1,'test_admin','',1),
 (2,'test_user','',1);
 
-
-DELETE FROM `post`;
 INSERT INTO `post` VALUES
 (1,'2020-03-02 14:55:24','tytul 1',_binary 'tresc 1',1),
 (2,'1991-02-04 14:55:24','tytul 2',_binary 'tresc 2',1),
@@ -30,24 +25,3 @@ INSERT INTO `post` VALUES
 (14,'2020-05-12 11:36:02','tytul 14',_binary 'tresc 14',2),
 (15,'2020-05-12 13:22:52','tytul 15',_binary 'tresc 15',2),
 (16,'2020-05-13 14:20:51','tytul 16',_binary 'tresc 16',2);
-
-
-DELETE FROM `user_role`;
-
-
-DELETE FROM `role`;
-INSERT INTO `role` VALUES 
-(1,'ADMIN'),
-(2,'USER');
-
-
-DELETE FROM `user`;
-INSERT INTO `user` VALUES 
-(1, "test_admin", "$2a$10$PTgQAqQMZl4uYTEvDwuzc.fdUObPL0Xiv8m7yjiP/KfjECremLAAi", 0),
-(2, "test_user", "$2a$10$OKxZqlZw766GiCN/YOd3puHByM1Tf4DmH2UU4Zgcejkf.Dosa6y3C", 0);
-
-
-INSERT INTO `user_role` VALUES 
-(1,1),
-(1,2),
-(2,2);
